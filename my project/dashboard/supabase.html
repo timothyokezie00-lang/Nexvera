@@ -6,24 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{
+  display: flex;
+  justify-content: center;
+ margin: 300px;
+}
+  .nexvera-logo {
+    
+    width: 40px; height: 40px;
+    background: white;
+    clip-path: polygon(0% 100%, 0% 0%, 85% 100%, 85% 15%, 100% 15%, 100% 100%, 15% 0%);
+  }
+</style>
+<div class="nexvera-logo"></div>
 </head>
 
 <body>
-  <h1>this is timothy </h1>
-  
-  <script>
-  const supabaseUrl = 'PASTE_YOUR_URL_HERE'
-  const supabaseKey = 'PASTE_YOUR_ANON_KEY_HERE'
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-  
-  async function makeDeposit() {
-    const tx = document.getElementById('txInput').value
-    const amount = document.getElementById('amountInput').value
-    const { error } = await supabase.from('deposits').insert([{ tx_hash: tx, amount: amount }])
-    if (error) alert(error.message)
-    else alert('Deposit saved!')
-  }
-</script>
+<!-- NEXVERA LOGO - No img file -->
+<div class="logo">
+  <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- The N Arrow -->
+    <path d="M10 90 L10 10 L80 90 L80 20 L90 20 L90 90 L20 10" 
+          fill="white"/>
+    <path d="M70 5 L95 10 L80 35 Z" fill="white"/>
+  </svg>
+  <span>NEXVERA</span>
+</div>
+
+<style>
+.logo { display:flex; align-items:center; gap:10px; background:#000; padding:10px; }
+.logo span { color:white; font-family:sans-serif; font-weight:700; letter-spacing:3px; font-size:20px; }
+
+
+
+
+</style>
 </body>
 
 </html>
