@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif !important;
+  text-transform: capitalize;
+}
+body{
+  background-color: #0A0A0A;
+color: #FFFFFF;
+width: 100%;
+min-height: 100vh;
+height: 100%;
+overflow: hidden;
+display: flex;
+justify-content: center;
+align-items: center;
+box-sizing: border-box;
+padding: 10px;
+}
+.container{
+  background-color: #1A1A1A;
+  height: 220px;
+  width: 300px;
+  border: 1px solid #2A2A2A;
+  margin-right: 15px;
+  display: flex;
+  flex-direction: column;
+ align-items: center;
+padding: 38px;
+ border-radius: 16px;
+  
+}
+.logo {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 42px;
+  color: #fff;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: -10px;
+}
+.altogether{
+  margin: 10px;
+}
+
+.v-logo{
+  display: inline-flex;
+align-items: center;
+justify-content: center;
+background: #F8982E;
+width: 52px;
+height: 56px;
+/* This na the sharpness */
+transform: skewX(-18deg);
+margin: 0 6px;
+box-shadow: 0 4px 15px rgba(248, 152, 46, 0.3);
+}
+.v-box{
+  transform: skewX(18deg);
+color: #000;
+font-weight: 900;
+font-size: 42px;
+line-height: 1;
+}
+.get_reward{
+  margin: 0px;
+  font-size: 9px;
+  color: #A1A1AA;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.logs_container{
+  margin-top: 50px;
+  margin-bottom: 50px;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.signup_button{
+  height: 45px;
+  width: 140px;
+  font-size: 18px;
+  background-color: #F8982E;
+  color: black;
+  border-radius: 20px;
+  border: 1px solid #F8982E;
+  box-shadow: 5px 5px 6px black;
+ 
+}
+.login_button{
+  height: 45px;
+width: 140px;
+font-size: 18px;
+background-color: #0A0A0A;
+border-radius: 20px;
+border: 1px solid gray;
+box-shadow: 5px 5px 6px black;
+
+}
+.sign{
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+}
+.sign2{
+text-decoration: none;
+color: white;
+}

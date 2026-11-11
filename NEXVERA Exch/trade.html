@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEXVERA - Copy Trading</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="Css/trade.css"/>
+  <style>
+    #leaderboardList::-webkit-scrollbar{ width:5px; }
+    #leaderboardList::-webkit-scrollbar-track{ background:#0a0f1e; border-radius:10px; }
+    #leaderboardList::-webkit-scrollbar-thumb{ background:#facc15; border-radius:10px; }
+    #leaderboardList{ scrollbar-width:thin; scrollbar-color:#facc15 #0a0f1e; }
+  </style>
+</head>
+<body>
+  <div class="bottom_nav">
+  <a href="dashboard.html"><div class="bottom_items"><div class="emoji"><div class="emoji-div"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg></div></div><div class="bn_nav">Home</div></div></a>
+  <a href="market.html"><div class="bottom_item1"><div class="emoji"><div class="emoji-div"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div></div><div class="bn_nav">Market</div></div></a>
+  <a href="trade.html"><div class="bottom_item2"><div class="emoji"><div class="emoji-div"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h13l-3-3"/><path d="M20 15H7l3 3"/></svg></div></div><div class="bn_nav" id="active">trade</div></div></a>
+  <a href="earn.html"><div class="bottom_item3"><div class="emoji"><div class="emoji-div"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9c0-1.5-1.5-2.5-3-2.5S9 7.5 9 9c0 2 6 2 6 4 0 1.5-1.5 2.5-3 2.5S9 14.5 9 13"/></svg></div></div><div class="bn_nav">earn</div></div></a>
+  <a href="assets.html"><div class="bottom_item4"><div class="emoji"><div class="emoji-div"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/><path d="M16 13h2"/></svg></div></div><div class="bn_nav">Assets</div></div></a>
+</div>
+  <h2 class="page-title">Copy Trading <span>• NEXVERA</span></h2>
+<div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="Search bot, @username..." oninput="searchBots()"></div>
+<p class="search-count" id="searchCount">Showing providers • <span id="connectedCount">0 Connected</span></p>
+
+<!-- ===== LEADERBOARD - ONE BOX ONLY, ends at Top 3, #4+ scroll INSIDE ===== -->
+<div style="background:#111a2e; border:1px solid #26314d; border-radius:14px; padding:14px; margin:14px 0; overflow:hidden;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <h3 style="margin:0; font-size:17px;">🏆 Top Traders</h3>
+    <div style="display:flex; gap:6px;">
+      <button onclick="showLeaderboard(10)" id="lbBtn10" style="background:#1e293b; color:#fff; border:none; padding:6px 10px; border-radius:20px; font-size:12px; cursor:pointer;">Top 10</button>
+      <button onclick="showLeaderboard(100)" id="lbBtn100" style="background:#facc15; color:#000; border:none; padding:6px 10px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;">Top 100</button>
+      <button onclick="showLeaderboard(1000)" id="lbBtn1000" style="background:#1e293b; color:#fff; border:none; padding:6px 10px; border-radius:20px; font-size:12px; cursor:pointer;">Top 1000</button>
+    </div>
+  </div>
+  <p style="color:#94a3b8; font-size:12px; margin:6px 0 10px;">Live ranking • Updated by NEXVERA • Can you beat #1?</p>
+  <!-- THIS IS THE ONLY LIST. Height = exactly 3 rows. #4 to infinite are UNDER Top 3 INSIDE this box. -->
+  <div id="leaderboardList" style="max-height:198px; overflow-y:auto; padding-right:4px;">Loading leaderboard...</div>
+  <p style="color:#facc15; font-size:11px; margin:8px 0 0; text-align:center;">↕ Scroll inside box for #4 → ∞ ↓</p>
+</div>
+<!-- ===== END LEADERBOARD - BOX ENDS HERE, BOTS START RIGHT BELOW ===== -->
+
+<div id="botsContainer"></div>
+<p class="no-result" id="noResult">No provider found.</p>
+<div class="popup" id="popup"><div class="popup-box"><div class="icon" id="popupIcon">❌</div><h3 id="popupTitle">Invalid Provider ID</h3><p id="popupMsg"></p><div id="popupPrice" style="display:none"><div class="price">$70 <small>/ Lifetime</small></div><p>Lifetime Subscription for Provider ID<br>Pay once, use forever. No monthly fee.</p></div><button class="gold" id="popupMainBtn" onclick="popupMainAction()">Contact Support</button><button class="ghost" onclick="closePopup()">Close</button></div></div>
+<script>
+const SUPABASE_URL = "https://bximlwzpjiypajqcanse.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let bots = [];
+let nexUnlocked = localStorage.getItem('nex_unlocked') === 'true';
+let connectedIds = JSON.parse(localStorage.getItem('nex_copied')||'[]');
+let currentTotal = 0;
+let lastMoveError = '';
+// ===== SYNC WITH ADMIN - bot_connections =====
+async function syncFromSupabase(){
+  try{
+    const { data:{ user } } = await sb.auth.getUser();
+    if(!user) return;
+    const { data, error } = await sb.from('bot_connections').select('*').eq('user_id', user.id);
+    if(error || !data) return;
+    // Admin disconnected = remove from phone too
+    const activeIds = data.filter(r=>r.status==='active').map(r=>String(r.bot_id));
+    // If Supabase has active ones that phone no get, add them
+    let changed = false;
+    activeIds.forEach(id=>{ if(!connectedIds.includes(id)){ connectedIds.push(id); changed = true; } });
+    // If phone has one but Supabase says disconnected / no row, and Supabase table exists, respect Admin
+    // Only prune if user has at least one row in Supabase (so old users with only localStorage are not wiped on first sync)
+    if(data.length > 0){
+      const before = connectedIds.length;
+      connectedIds = connectedIds.filter(id=> activeIds.includes(String(id)));
+      if(connectedIds.length !== before) changed = true;
+    }
+    if(changed) localStorage.setItem('nex_copied', JSON.stringify(connectedIds));
+  }catch(e){ console.log('syncFromSupabase error', e); }
+}
+async function syncConnectToSupabase(bot, amount){
+  try{
+    const { data:{ user } } = await sb.auth.getUser();
+    if(!user) return;
+    // Avoid duplicate active row
+    const { data: existing } = await sb.from('bot_connections').select('id').eq('user_id', user.id).eq('bot_id', bot.id).eq('status','active');
+    if(existing && existing.length) return;
+    await sb.from('bot_connections').insert([{ user_id: user.id, user_email: user.email || '', bot_id: bot.id, bot_name: bot.name, amount: Number(amount||0), status: 'active' }]);
+  }catch(e){ console.log('syncConnect error', e); }
+}
+async function syncDisconnectToSupabase(botId){
+  try{
+    const { data:{ user } } = await sb.auth.getUser();
+    if(!user) return;
+    await sb.from('bot_connections').update({ status: 'disconnected' }).eq('user_id', user.id).eq('bot_id', botId).eq('status','active');
+  }catch(e){ console.log('syncDisconnect error', e); }
+}
+// ===== END SYNC =====
+// ===== LEADERBOARD - ONE BOX, #4+ INSIDE SCROLL =====
+let leaderboardLimit = 100;
+function leaderboardRow(r, index){
+  const rank = index + 1;
+  const medal = rank==1?'🥇':rank==2?'🥈':rank==3?'🥉':'#'+rank;
+  const highlight = rank<=3 ? 'background:#1a2a1a; border-color:#22c55e;' : '';
+  return `<div style="display:flex; justify-content:space-between; align-items:center; background:#0a0f1e; border:1px solid #26314d; ${highlight} border-radius:10px; padding:10px; margin-bottom:8px; min-height:46px;"><div style="display:flex; gap:10px; align-items:center;"><span style="font-size:18px; width:32px; text-align:center;">${medal}</span><div><b>${r.display_name}</b><br><span style="color:#94a3b8; font-size:12px;">${r.bot_name||''} • ${r.win_rate}% win</span></div></div><div style="text-align:right;"><b style="color:#22c55e;">+$${Number(r.profit||0).toLocaleString()}</b><br><span style="color:#94a3b8; font-size:12px;">Invested $${Number(r.total_invested||0).toLocaleString()}</span></div></div>`;
+}
+async function loadLeaderboard(){
+  const el = document.getElementById('leaderboardList');
+  const { data, error } = await sb.from('leaderboard').select('*').eq('is_active', true).order('rank_position', {ascending:true}).order('profit', {ascending:false}).limit(leaderboardLimit);
+  if(error){ el.innerHTML = '<p style="color:#ef4444; text-align:center; font-size:13px;">Leaderboard error: '+error.message+'</p>'; return; }
+  if(!data || data.length===0){ el.innerHTML = '<p style="color:#888; text-align:center; font-size:13px;">No leaderboard yet. Be the first!</p>'; return; }
+  el.innerHTML = data.map((r,i)=> leaderboardRow(r,i)).join('');
+}
+function showLeaderboard(n){
+  leaderboardLimit = n;
+  document.getElementById('lbBtn10').style.background = n==10 ? '#facc15' : '#1e293b'; document.getElementById('lbBtn10').style.color = n==10 ? '#000' : '#fff';
+  document.getElementById('lbBtn100').style.background = n==100 ? '#facc15' : '#1e293b'; document.getElementById('lbBtn100').style.color = n==100 ? '#000' : '#fff';
+  document.getElementById('lbBtn1000').style.background = n==1000 ? '#facc15' : '#1e293b'; document.getElementById('lbBtn1000').style.color = n==1000 ? '#000' : '#fff';
+  loadLeaderboard();
+}
+// ===== END LEADERBOARD =====
+async function getBalances(){
+  const { data:{ user } } = await sb.auth.getUser();
+  if(!user) return { funding:0, trading:0, total:0, user:null };
+  const { data: rows } = await sb.from('balances').select('amount, account_type').eq('user_id', user.id).eq('coin','USDT');
+  let funding=0, trading=0;
+  (rows||[]).forEach(r=>{ if((r.account_type||'').toLowerCase()==='funding') funding += Number(r.amount||0); if((r.account_type||'').toLowerCase()==='trading') trading += Number(r.amount||0); });
+  return { funding, trading, total: funding+trading, user };
+}
+async function moveAllFundingToTrading(){
+  lastMoveError = '';
+  const { funding, trading, user } = await getBalances();
+  if(!user){ lastMoveError = 'No user logged in'; return false; }
+  if(funding <= 0) return true;
+  const { data: tRows } = await sb.from('balances').select('id, amount').eq('user_id', user.id).eq('coin','USDT').eq('account_type','trading');
+  if(tRows && tRows.length > 0){ const { error: err2 } = await sb.from('balances').update({ amount: Number(tRows[0].amount||0) + funding }).eq('id', tRows[0].id); if(err2){ lastMoveError = 'STEP 1 (Trading += Funding) FAILED: ' + err2.message; return false; } for(let i=1;i<tRows.length;i++){ await sb.from('balances').update({ amount: 0 }).eq('id', tRows[i].id); } }
+  else { const { error: err3 } = await sb.from('balances').insert([{ user_id: user.id, coin: 'USDT', account_type:'trading', amount: trading + funding }]); if(err3){ lastMoveError = 'STEP 1 (Create Trading row) FAILED: ' + err3.message; return false; } }
+  const { error: err1 } = await sb.from('balances').update({ amount: 0 }).eq('user_id', user.id).eq('coin','USDT').eq('account_type','funding');
+  if(err1){ lastMoveError = 'STEP 2 (Funding -> 0) FAILED: ' + err1.message; return false; }
+  return true;
+}
+async function checkAutoUnlock(){ const { total } = await getBalances(); currentTotal = total; if(total === 0 && connectedIds.length > 0){ connectedIds = []; localStorage.setItem('nex_copied', JSON.stringify(connectedIds)); } return total; }
+async function loadBots(){
+  document.getElementById('botsContainer').innerHTML = '<p style="text-align:center;padding:30px;color:#888;">Loading bots...</p>';
+  await syncFromSupabase();
+  await checkAutoUnlock();
+  const { data, error } = await sb.from('bots').select('*').eq('is_active', true).order('created_at', {ascending:true});
+  if(error){ document.getElementById('botsContainer').innerHTML = '<p style="text-align:center;padding:30px;color:#ef4444;">Error: '+error.message+'</p>'; return; }
+  bots = data.map(b => ({ name: b.name, user: b.username, note: b.description, fee: b.fee, investors: b.investors, dd: b.max_drawdown, own: b.own_funds, min: b.min_investment, total: b.total_invested, ret: b.return_6m, win: b.win_rate, fol: b.followers, risk: b.risk, badge: b.badge, code: b.provider_id_code, id: b.id }));
+  displayBots(bots);
+}
+function riskClass(risk){ risk = (risk||'').toUpperCase(); if(risk.includes('LOW')) return 'low'; if(risk.includes('HIGH')) return 'high'; return 'medium'; }
+function displayBots(list){
+  const container = document.getElementById('botsContainer'); const noResult = document.getElementById('noResult'); const connectedCount = connectedIds.length;
+  document.getElementById('searchCount').innerHTML = 'Showing providers • <span id="connectedCount">' + connectedCount + ' Connected</span>';
+  if(list.length === 0){ container.innerHTML = ''; noResult.style.display = 'block'; return; } noResult.style.display = 'none';
+  container.innerHTML = list.map(b => {
+    let firstLetter = (b.name||'?').charAt(0).toUpperCase(); let isNex = b.code === 'NXV-XAU-8812' || b.name === 'Nex_V_Era'; let isLocked = isNex && !nexUnlocked; let isConnected = connectedIds.includes(String(b.id)) || connectedIds.includes(b.id);
+    let badgeHtml = b.badge ? `<span class="badge">${b.badge}</span>` : ''; if(isConnected) badgeHtml += ` <span class="badge-connected">Connected</span>`; let avatarBg = isConnected ? '#22c55e' : '#f59e0b'; let paidHtml = '';
+    if(isNex && !isConnected){ paidHtml = `<div class="paid-banner"><div><b>👑 VIP Bot - Nex_V_Era</b><p>Unlock this VIP provider to copy it. One-time payment.</p></div><span>👑</span></div><button class="pay-btn" onclick="unlockNex('${b.id}')">🔒 Unlock - $70</button>${!nexUnlocked ? '<div class="locked-note">This bot is locked. Pay $70 to unlock, then enter its Provider ID Code below.</div>' : ''}`; }
+    let copyFormHtml = '';
+    if(isConnected){ const isFundsLocked = currentTotal > 0; copyFormHtml = `<form class="copy-form" onsubmit="return false;"><div class="provider-row success"><label>Provider ID</label><input type="text" value="${b.code}" disabled></div><div class="success-msg" style="display:block;">${isFundsLocked ? '🔒 Connected - Funds locked in Trading' : '✅ Connected to ' + b.name}</div><button type="button" class="connect-btn is-connected" onclick="disconnectBot('${b.id}')" ${isFundsLocked ? 'style="opacity:0.6;"' : ''}>${isFundsLocked ? '🔒 Locked - Withdraw all funds to disconnect' : 'Connected - Tap to Disconnect'}</button></form>`; }
+    else if(isLocked){ copyFormHtml = `<form class="copy-form" onsubmit="return connectBot(event, '${b.id}')"><div class="provider-row"><label>Provider ID</label><input type="text" id="input-${b.id}" placeholder="Enter Provider ID Code" required></div><div class="error-msg" id="err-${b.id}"></div><div class="success-msg" id="ok-${b.id}"></div><button type="submit" class="connect-btn">Connect</button></form>`; }
+    else { copyFormHtml = `<form class="copy-form" onsubmit="return connectBot(event, '${b.id}')"><div class="provider-row"><label>Provider ID</label><input type="text" id="input-${b.id}" placeholder="Enter Provider ID Code" required></div><div class="error-msg" id="err-${b.id}"></div><div class="success-msg" id="ok-${b.id}"></div><button type="submit" class="connect-btn">Connect</button></form>`; }
+    return `<div class="bot-card ${isConnected ? 'connected' : ''} ${isNex ? 'paid' : ''}"><div class="top_bar"><div class="small_group"><div class="user_img" style="background:${avatarBg};">${firstLetter}</div><div class="bot_name"><h3>${b.name}${badgeHtml}</h3><p>${b.user}</p><small>${Number(b.investors||0).toLocaleString()} investors • ${b.win}% win rate</small></div></div><div class="risk ${riskClass(b.risk)}">${b.risk||''}</div></div><div class="bot_note">${b.note||''}</div><div class="stats"><div class="stat"><div class="gray_txt">Win Rate</div><h5 class="green">${b.win}%</h5></div><div class="stat"><div class="gray_txt">Return 6M</div><h5 class="green">${b.ret}</h5></div><div class="stat"><div class="gray_txt">Max Drawdown</div><h5 style="color:#ef4444;">${b.dd}</h5></div><div class="stat"><div class="gray_txt">Fee</div><h5>${b.fee}%</h5></div></div><div class="invested_percent"><div><div class="gray_txt">Own Funds</div><h5>$${Number(b.own||0).toLocaleString()}</h5></div><div><div class="gray_txt">Min Investment</div><h5 class="gold">$${Number(b.min||0).toLocaleString()}</h5></div><div><div class="gray_txt">Followers</div><h5>${Number(b.fol||0).toLocaleString()}</h5></div></div>${paidHtml}${copyFormHtml}</div>`;
+  }).join('');
+}
+function searchBots(){ const q = document.getElementById('searchInput').value.toLowerCase(); const filtered = bots.filter(b => (b.name+' '+b.user+' '+(b.note||'')).toLowerCase().includes(q)); displayBots(filtered); }
+async function connectBot(e, id){
+  e.preventDefault(); const b = bots.find(x => String(x.id) === String(id)); const input = document.getElementById('input-'+id); const err = document.getElementById('err-'+id); const ok = document.getElementById('ok-'+id); const code = input.value.trim(); let isNex = b.code === 'NXV-XAU-8812' || b.name === 'Nex_V_Era';
+  if(isNex && !nexUnlocked){ document.getElementById('popupIcon').textContent = '👑'; document.getElementById('popupTitle').textContent = 'VIP Bot Locked'; document.getElementById('popupMsg').textContent = 'Nex_V_Era is VIP. Pay $70 to unlock it first.'; document.getElementById('popupPrice').style.display = 'block'; document.getElementById('popupMainBtn').textContent = 'Contact Support'; document.getElementById('popupMainBtn').onclick = function(){ unlockNex(id); }; document.getElementById('popup').style.display = 'flex'; return false; }
+  if(code === b.code){
+    const minNeeded = Number(b.min || 0); const { total: userTotal } = await getBalances();
+    if(userTotal < minNeeded){ const needMore = (minNeeded - userTotal).toFixed(2); err.textContent = `❌ Insufficient Funds. This bot needs $${minNeeded}. You have $${userTotal.toFixed(2)}. Deposit $${needMore} more.`; err.style.display = 'block'; if(ok) ok.style.display = 'none'; document.getElementById('popupIcon').textContent = '💰'; document.getElementById('popupTitle').textContent = 'Insufficient Funds'; document.getElementById('popupMsg').textContent = `${b.name} requires minimum $${minNeeded}. Your total balance is $${userTotal.toFixed(2)}. You need $${needMore} more to connect to this bot. You can still connect to a bot with a lower minimum.`; document.getElementById('popupPrice').style.display = 'none'; document.getElementById('popupMainBtn').textContent = 'Go to Assets / Deposit'; document.getElementById('popupMainBtn').onclick = function(){ window.location.href = 'assets.html'; }; document.getElementById('popup').style.display = 'flex'; return false; }
+    const moved = await moveAllFundingToTrading(); if(!moved){ err.textContent = '❌ ' + (lastMoveError || 'Could not move funds. Unknown error.'); err.style.display = 'block'; return false; }
+    await checkAutoUnlock(); if(!connectedIds.includes(String(b.id))){ connectedIds.push(String(b.id)); } localStorage.setItem('nex_copied', JSON.stringify(connectedIds)); await syncConnectToSupabase(b, userTotal); ok.textContent = '✅ Connected!'; ok.style.display = 'block'; err.style.display = 'none'; displayBots(bots); document.getElementById('popupIcon').textContent = '✅'; document.getElementById('popupTitle').textContent = 'Connected!'; document.getElementById('popupMsg').textContent = 'You are now copying ' + b.name + '. All funds moved from Funding to Trading. Go to Assets to see it.'; document.getElementById('popupPrice').style.display = 'none'; document.getElementById('popupMainBtn').textContent = 'Done'; document.getElementById('popupMainBtn').onclick = function(){ closePopup(); }; document.getElementById('popup').style.display = 'flex';
+  } else { err.textContent = '❌ Wrong Provider ID Code. Contact Support.'; err.style.display = 'block'; ok.style.display = 'none'; input.closest('.provider-row').classList.add('error'); document.getElementById('popupIcon').textContent = '❌'; document.getElementById('popupTitle').textContent = 'Invalid Provider ID'; document.getElementById('popupMsg').textContent = 'Wrong Provider ID Code for ' + b.name + '. Contact Support for the correct code.'; document.getElementById('popupPrice').style.display = 'none'; document.getElementById('popupMainBtn').textContent = 'Contact Support'; document.getElementById('popupMainBtn').onclick = function(){ closePopup(); }; document.getElementById('popup').style.display = 'flex'; }
+  return false;
+}
+async function disconnectBot(id){ const { total } = await getBalances(); currentTotal = total; if(total > 0){ document.getElementById('popupIcon').textContent = '🔒'; document.getElementById('popupTitle').textContent = 'Cannot Disconnect'; document.getElementById('popupMsg').textContent = 'Your funds are locked in Trading. Withdraw all funds until your balance is $0.00, then the bot will unlock automatically.'; document.getElementById('popupPrice').style.display = 'none'; document.getElementById('popupMainBtn').textContent = 'Go to Assets'; document.getElementById('popupMainBtn').onclick = function(){ window.location.href = 'assets.html'; }; document.getElementById('popup').style.display = 'flex'; displayBots(bots); return; } connectedIds = connectedIds.filter(x => String(x) !== String(id)); localStorage.setItem('nex_copied', JSON.stringify(connectedIds)); await syncDisconnectToSupabase(id); displayBots(bots); }
+function unlockNex(id){ if(confirm('Nex_V_Era is VIP.\n\nPay $70 to unlock? Contact Support to confirm payment.')){ let code = prompt('Enter Unlock Code from Support for Nex_V_Era:'); if(code && code.trim() === 'NXV-XAU-8812'){ nexUnlocked = true; localStorage.setItem('nex_unlocked','true'); alert('✅ Nex_V_Era Unlocked! Now enter its Provider ID Code to connect.'); closePopup(); displayBots(bots); } else if(code){ alert('Wrong unlock code. Contact Support.'); } } }
+function popupMainAction(){ closePopup(); } function closePopup(){ document.getElementById('popup').style.display = 'none'; }
+loadLeaderboard(); loadBots();
+</script>
+</body>
+</html>

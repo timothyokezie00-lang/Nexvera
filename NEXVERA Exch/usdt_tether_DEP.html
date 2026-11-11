@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deposit USDT</title>
+  <link rel="stylesheet" href="Css/ALL_DEP.css" />
+</head>
+<body>
+  <div class="container">
+    <div style="margin-left: -290px; margin-top: -60px;
+    margin-bottom: 60px;" class="back">
+      <a class="b_ack" href="coin_options.html">back</a>
+    </div>
+
+    <h2 style="text-align:center;">Deposit USDT / Tether</h2>
+    <p style="text-align:center; color:#facc15; font-size:12px;">TRON (TRC20) ONLY - Check your Cake Wallet</p>
+
+    <div style="background:#111a2e; padding:16px; border-radius:14px; margin-top:12px; text-align:center;">
+      
+      <div style="background:#fff; padding:10px; border-radius:12px; display:inline-block;">
+        <img id="depositQR" src="" style="width:160px; height:160px; display:block;">
+      </div>
+
+      <!-- PLACE 1 -->
+      <div id="depositAddress" style="background:#0a0f1e; border:1px solid #26314d; border-radius:10px; padding:12px; margin:14px 0; word-break:break-all; color:#fff; font-size:14px;">
+        TVGabyfJrKD379QE5eDCfzKDDBGLxiWZXS
+      </div>
+
+      <button onclick="copyDepositAddress()" style="background:#1e293b; color:#fff; border:none; padding:12px 20px; border-radius:20px; font-weight:700; width:100%; cursor:pointer;">
+        📋 Copy Address
+      </button>
+
+      <p style="color:#FFB800; font-size:12px; margin-top:12px;">⚠️ Send ONLY USDT on TRON (TRC20). Sending on another network will lose your funds.</p>
+      
+      <!-- ONLY THIS BUTTON CHANGE - NOW E GO OPEN SUPPORT WITH MESSAGE -->
+      <button onclick="messageSupport()" style="background:#facc15; color:#000; border:none; padding:12px; border-radius:10px; font-weight:700; width:100%; margin-top:8px;">I Have Sent</button>
+      <p id="copyToast" style="display:none; color:#22c55e; font-size:13px; font-weight:700; margin-top:10px;">✓ Address Copied!</p>
+    </div>
+  </div>
+
+<script>
+// PLACE 2 - THIS IS THE ONE THAT CONTROLS THE PAGE
+// Go to Cake Wallet -> Receive -> USDT / Tether -> Tap Copy -> Paste here
+const USDT_ADDRESS = "TVGabyfJrKD379QE5eDCfzKDDBGLxiWZXS";
+
+document.getElementById('depositAddress').textContent = USDT_ADDRESS;
+document.getElementById('depositQR').src = "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=" + USDT_ADDRESS;
+
+async function copyDepositAddress(){
+  const addr = document.getElementById('depositAddress').textContent.trim();
+  try { await navigator.clipboard.writeText(addr); } catch(e) {
+    const ta = document.createElement('textarea'); ta.value = addr;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  const toast = document.getElementById('copyToast');
+  toast.style.display = 'block';
+  setTimeout(()=>{ toast.style.display = 'none'; }, 2000);
+}
+
+// NEW - ONLY THIS FUNCTION ADDED, FOR I HAVE SENT BUTTON
+function messageSupport(){
+  let msg = "Hello, I have paid to your USDT address " + USDT_ADDRESS + " on TRON (TRC20). Please confirm my deposit.";
+  if(window.smartsupp){ smartsupp('chat:open'); }
+  // Try send message - Smartsupp fit delay small, so we try few times
+  let tries = 0;
+  let timer = setInterval(()=>{
+    tries++;
+    try{
+      if(window.smartsupp){ smartsupp('chat:message', msg); clearInterval(timer); }
+    }catch(e){}
+    if(tries > 5) clearInterval(timer);
+  }, 800);
+}
+</script>
+
+<!-- SMARTSUPP - NEEDED FOR SUPPORT TO OPEN -->
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About Us - NEXVERA</title>
+  <style>
+    *{box-sizing:border-box}
+    body{background:#000;color:#fff;font-family:Arial,sans-serif;margin:0;padding:0}
+    .container{max-width:480px;margin:0 auto;padding:16px;padding-bottom:90px}
+    .back a{color:#facc15;text-decoration:none;font-weight:700;font-size:14px}
+    h2{text-align:center;color:#facc15;margin:16px 0 4px;font-size:22px}
+    .sub{text-align:center;color:#94a3b8;font-size:13px;margin:0 0 16px}
+    .card{background:#111a2e;border:1px solid #26314d;border-radius:14px;padding:16px;margin-bottom:12px}
+    .card h3{color:#facc15;margin:0 0 10px;font-size:16px}
+    .card p{color:#cbd5e1;font-size:14px;line-height:1.6;margin:6px 0}
+    .list{list-style:none;padding:0;margin:0}
+    .list li{color:#cbd5e1;font-size:14px;line-height:1.6;padding:4px 0 4px 24px;position:relative}
+    .list li::before{content:"•";color:#facc15;position:absolute;left:6px;top:4px}
+    .list.check li::before{content:"✅";left:0;top:4px}
+    .highlight{color:#fff;font-weight:700}
+    .supportBtn{display:block;background:#22c55e;color:#fff;text-align:center;padding:14px;border-radius:10px;font-weight:700;text-decoration:none;margin:14px 0}
+    .footer{text-align:center;color:#64748b;font-size:12px;line-height:1.6;margin-top:16px}
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="back"><a href="profile.html">← Back</a></div>
+
+  <h2>About Us</h2>
+  <p class="sub">NEXVERA. Exchange</p>
+
+  <div class="card">
+    <h3>Who We Are</h3>
+    <p>NEXVERA is a simple, fast and secure crypto exchange built for everyday users.</p>
+    <p>Buy, sell, deposit, withdraw and trade crypto without stress — straight from your phone.</p>
+  </div>
+
+  <div class="card">
+    <h3>What We Do</h3>
+    <ul class="list">
+      <li>Deposit with Fiat — <span class="highlight">USD, GBP, EUR &amp; more</span></li>
+      <li>Deposit with Crypto — <span class="highlight">BTC, USDT, ETH, SOL, BNB</span></li>
+      <li>Withdraw to your bank or crypto wallet</li>
+      <li>Trade with Funding &amp; Trading accounts</li>
+      <li>24/7 Human Support</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Why NEXVERA?</h3>
+    <ul class="list check">
+      <li>Fast deposit &amp; withdrawal approval</li>
+      <li>Simple design for beginners</li>
+      <li>No hidden stress, no complicated steps</li>
+      <li>Real human support, not bot only</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Our Mission</h3>
+    <p>To make crypto easy for everyone — send, receive and grow your money from your phone, anywhere in the world.</p>
+  </div>
+
+  <div class="card">
+    <h3>🔒 Security</h3>
+    <ul class="list">
+      <li>Always confirm your wallet address and chain type before sending.</li>
+      <li>Crypto transactions are <span class="highlight">irreversible</span>.</li>
+      <li>Never share your password or OTP with anyone, even support.</li>
+      <li>NEXVERA support will <span class="highlight">never</span> ask for your password.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Need Help?</h3>
+    <p>Our support team is always available to help you with deposits, withdrawals and trading.</p>
+    <a class="supportBtn" href="#" onclick="openSupport(); return false;">💬 Chat Support</a>
+  </div>
+
+  <p class="footer">
+    Crypto prices can go up and down.<br>
+    Only trade what you can afford to lose.<br><br>
+    © 2026 NEXVERA. All rights reserved.
+  </p>
+
+</div>
+
+<script>
+  function openSupport(){
+    if(window.smartsupp){ smartsupp('chat:open'); }
+    else{ alert('Support dey load, try again in 2 seconds'); }
+  }
+</script>
+
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+
+</body>
+</html>

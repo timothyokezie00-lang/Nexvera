@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexvera Admin Login</title>
+<style>
+  body{background:#0a0f1e;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px}
+  .box{background:#111a2e;padding:28px;border-radius:16px;width:100%;max-width:360px;text-align:center}
+  h2{margin:0 0 6px} p{color:#94a3b8;font-size:13px;margin:0 0 20px}
+  input{width:100%;padding:13px;border-radius:10px;border:1px solid #26314d;background:#0a0f1e;color:#fff;margin-bottom:12px;box-sizing:border-box}
+  button{width:100%;padding:13px;border:none;border-radius:10px;background:#facc15;font-weight:700;cursor:pointer}
+  #msg{font-size:13px;min-height:18px;margin-top:12px;color:#ef4444}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Nexvera Admin</h2>
+  <p>Admin login only</p>
+  <input id="adminEmail" placeholder="Admin Email">
+  <input id="adminPass" type="password" placeholder="Password">
+  <button onclick="adminLogin()">Login</button>
+  <div id="msg"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient = supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co", "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
+
+async function adminLogin(){
+  let email = document.getElementById('adminEmail').value.trim();
+  let pass = document.getElementById('adminPass').value;
+  if(!email || !pass) return document.getElementById('msg').textContent = 'Fill email and password';
+
+  document.getElementById('msg').textContent = 'Checking...';
+
+  // NEW: Use secure function, no direct read of admins table
+  let { data, error } = await supabaseClient.rpc('check_admin_login', {
+    p_email: email,
+    p_password: pass
+  });
+
+  if(error || data !== true) return document.getElementById('msg').textContent = 'Wrong admin login';
+
+  localStorage.setItem('nexvera_admin', email);
+  window.location.href = 'admin.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="Css/All_DOP.css"/>
+  <style>
+    #waitingBox{display:none;text-align:center;padding:20px}
+    #waitingBox h4{color:#facc15}
+    .checkBtn{display:block;background:#1e293b;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;border:none;width:100%;cursor:pointer}
+  </style>
+</head>
+
+<body>
+<div class="container">
+  
+  <div id="return">
+    <a href="withrawal_coin_option.html">Back</a>
+  </div>
+  
+  <div class="everthing">
+    
+    <!-- FORM - your exact SOL form -->
+    <div id="formBox">
+    <form onsubmit="return false;">
+      
+      
+      <div class="all_box">
+        
+        
+        <div class="inpu">
+          <label for="Amount">Amount ($)</label><input type="number" id="Amount" min="1" step="0.01" value="" placeholder="20000" required />
+        </div>
+        
+<div style="margin-bottom:12px">
+  <label>Withdraw From</label><br>
+  <select id="withdrawFrom" style="width:98%;padding:12px;border-radius:10px">
+    <option value="funding">Funding Account</option>
+    <option value="trading">Trading Account</option>
+  </select>
+</div>
+        
+        <div class="inpu">
+          <label for="Bitcoin_adress">SOL adress</label>
+          <input type="text" name="" id="Bitcoin_address" placeholder="0x729949483828sbhsdjs929" minlength="7" required/>
+        </div>
+       
+       <div>
+         <select id="withdrawChain" required>
+          <option value="" disabled selected>Choose a chain type</option>
+           <option value="SOL">SOL</option>
+         </select>
+       </div>
+
+        <div class="butt">
+          <button id="withdrawBtn" onclick="requestWithdraw()" class="butt1" type="button">Withraw</button>
+        </div>
+      </div>
+      
+    </form>
+    </div>
+
+    <!-- WAITING - same as ETH / BTC / fiat, same page -->
+    <div id="waitingBox">
+      <h4>🔄 Transaction Processing</h4>
+      <p id="waitText" style="color:#94a3b8;line-height:1.6">Your withdrawal request has been sent.</p>
+      <button onclick="openSupport()" style="width:100%; background:#22c55e; color:#fff; border:none; padding:14px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; margin:14px 0;">💬 Chat Support</button>
+      <button class="checkBtn" onclick="checkStatus()">Check Status 🔄</button>
+      <p style="font-size:12px;color:#94a3b8;margin-top:12px">This page checks automatically every 10 seconds. Keep it open.</p>
+    </div>
+    
+    <div class="bottom_note">
+      
+      NOTE:
+<li>make sure that the chain type you make deposits to is the one you make withrawals from!!!</li>
+
+<li>All chains that are not listed is not supported by nexvera</li>
+
+<li>Cross check deposit address and chains, crypto transactions are irreversible!!!</li>
+      
+      
+    </div>
+    
+  </div>
+  
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseClient = supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co", "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
+
+  function openSupport(){
+    if(window.smartsupp){ smartsupp('chat:open'); }
+    else{ alert('Support dey load, try again in 2 seconds'); }
+  }
+
+  let currentId = localStorage.getItem('nexvera_pending_sol_withdrawal');
+  let pollTimer = null;
+  if(currentId){
+    document.getElementById('formBox').style.display='none';
+    document.getElementById('waitingBox').style.display='block';
+    startPolling();
+    checkStatus();
+  }
+
+  async function requestWithdraw(){
+    const btn = document.getElementById('withdrawBtn');
+    let amount = Number(document.getElementById('Amount').value);
+    let address = document.getElementById('Bitcoin_address').value.trim();
+    let chain = document.getElementById('withdrawChain').value;
+    let fromAccount = document.getElementById('withdrawFrom').value;
+
+    if(!address || !chain){ alert('Fill amount, address and chain'); return; }
+    // FIX: Block negative amount and zero
+    if (isNaN(amount) || amount <= 0) {
+      alert('You cannot withdraw a negative amount or 0. Please enter an amount more than 0.');
+      return;
+    }
+
+    btn.disabled = true; btn.textContent='Processing...';
+    const { data:{ user } } = await supabaseClient.auth.getUser();
+    let userId = user ? user.id : localStorage.getItem('nexvera_user_id') || localStorage.getItem('user_id');
+    if(!userId){ alert('Please login first'); btn.disabled=false; btn.textContent='Withraw'; return; }
+
+    let { data: balRows } = await supabaseClient.from('balances')
+      .select('amount')
+      .eq('user_id', userId)
+      .eq('coin', 'USDT')
+      .eq('account_type', fromAccount);
+
+    let have = (balRows || []).reduce((s, r) => s + Number(r.amount || 0), 0);
+    // FIX: Check even when balance is 0
+    if(amount > have){ alert(`Insufficient balance! You have $${have} in ${fromAccount} account`); btn.disabled=false; btn.textContent='Withraw'; return; }
+
+    // SAME TABLE AS FIAT + ETH + BTC - withdrawals, NOT direct deduction
+    const { data, error } = await supabaseClient.from('withdrawals').insert([{
+      user_id: userId,
+      coin: 'SOL',
+      coin_amount: Number(amount),
+      usdt_amount: Number(amount),
+      account_type: fromAccount,
+      address: address,
+      chain: chain,
+      status: 'pending'
+    }]).select().single();
+
+    if(error){ alert('Error: '+error.message); btn.disabled=false; btn.textContent='Withraw'; return; }
+
+    currentId = data.id;
+    localStorage.setItem('nexvera_pending_sol_withdrawal', String(data.id));
+    document.getElementById('formBox').style.display='none';
+    document.getElementById('waitingBox').style.display='block';
+    document.getElementById('waitText').innerHTML = `Your withdrawal of <b>$${amount} worth of SOL</b> from <b>${fromAccount}</b> account to <b>${chain} - ${address.slice(0,8)}...</b> has been sent.<br>Wait for admin approval.`;
+    startPolling();
+  }
+
+  function startPolling(){ if(pollTimer) clearInterval(pollTimer); pollTimer=setInterval(checkStatus,10000); }
+
+  async function checkStatus(){
+    if(!currentId) return;
+    let { data:d } = await supabaseClient.from('withdrawals').select('*').eq('id', currentId).single();
+    if(!d) return;
+    if(d.status==='approved'){
+      clearInterval(pollTimer);
+      localStorage.removeItem('nexvera_pending_sol_withdrawal');
+      document.getElementById('waitText').innerHTML=`✅ <b>APPROVED!</b><br><b>$${d.coin_amount} worth of SOL</b> withdrawn from your <b>${d.account_type}</b> account.`;
+      document.getElementById('waitText').style.color='#22c55e';
+      setTimeout(()=>{ window.location.href='dashboard.html'; },3000);
+    }
+    if(d.status==='rejected'){
+      clearInterval(pollTimer);
+      localStorage.removeItem('nexvera_pending_sol_withdrawal');
+      document.getElementById('waitText').innerHTML=`❌ <b>REJECTED</b><br>Reason: ${d.reject_reason||'Contact support'}<br><br><button onclick="localStorage.removeItem('nexvera_pending_sol_withdrawal');document.getElementById('waitingBox').style.display='none';document.getElementById('formBox').style.display='block';" style="background:#facc15;color:#000;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer">Try Again</button>`;
+      document.getElementById('waitText').style.color='#ef4444';
+    }
+  }
+</script>
+
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Withdraw - Nexvera</title>
+  <link rel="Stylesheet" href="Css/fiat_withrawal.css" />
+  <style>
+    #waitingBox{display:none;text-align:center;padding:20px}
+    #waitingBox h4{color:#facc15}
+    .supportBtn{display:block;background:#22c55e;color:#fff;text-align:center;padding:14px;border-radius:10px;font-weight:700;text-decoration:none;margin:14px 0}
+    .checkBtn{display:block;background:#1e293b;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;border:none;width:100%;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back"><a class="b_ack" href="withrawal.html">back</a></div>
+    <h3>Enter withdrawal details</h3>
+    
+    <!-- FORM -->
+    <div class="dp_section" id="formBox">
+      <form onsubmit="return false;">
+        <div class="grp">
+          <label for="local_currency">local Currency</label>
+          <input class="box" type="text" id="local_currency" placeholder="USD,GBP,EU" minlength="3" maxlength="3" required />
+        </div>
+        <div class="grp">
+          <label for="bank_name">Bank name</label>
+          <input class="box" type="text" id="bank_name" placeholder="chasebank, bank of america etc...." required />
+        </div>
+        <div class="grp">
+          <label for="account_name">Account name</label>
+          <input class="box" type="text" id="account_name" placeholder="Mike...." required />
+        </div>
+        <div class="grp">
+          <label for="account_details">Other</label>
+          <input class="box" type="text" id="account_details" placeholder="other info / sort-code / optional" />
+        </div>
+        <div class="grp">
+          <label for="withAmount">Amount</label>
+          <input class="box" type="number" id="withAmount" min="1" step="0.01" placeholder="20000" required />
+        </div>
+        <select id="withAccount">
+          <option value="funding">Funding account</option>
+          <option value="trading">Trading account</option>
+        </select>
+        <div class="grp" id="btn">
+          <button class="box" id="m_btn" type="button" onclick="requestWithdraw()">Withdraw</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- WAITING -->
+    <div class="dp_section" id="waitingBox">
+      <h4 id="waitTitle">🔄 Transaction Processing</h4>
+      <p id="waitText" style="color:#94a3b8;line-height:1.6">Your withdrawal request has been sent.</p>
+      <button id="supportBtn" onclick="openSupport()" style="
+  width:100%; background:#22c55e; color:#fff;
+  border:none; padding:14px; border-radius:10px;
+  font-size:16px; font-weight:700; cursor:pointer; margin:14px 0;
+">💬 Chat Support</button>
+
+<script>
+  function openSupport() {
+    if (window.smartsupp) {
+      smartsupp('chat:open');
+    } else {
+      alert('Support dey load, try again in 2 seconds');
+    }
+  }
+</script>
+      <button id="checkBtn" class="checkBtn" onclick="checkStatus()">Check Status 🔄</button>
+      <p id="autoNote" style="font-size:12px;color:#94a3b8;margin-top:12px">This page checks automatically every 10 seconds. Keep it open.</p>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseClient = supabase.createClient('https://bximlwzpjiypajqcanse.supabase.co','sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV');
+  let currentId = localStorage.getItem('nexvera_pending_withdrawal');
+  let pollTimer = null;
+  if(currentId){ document.getElementById('formBox').style.display='none'; document.getElementById('waitingBox').style.display='block'; startPolling(); }
+
+  async function requestWithdraw(){
+    const btn = document.getElementById('m_btn');
+    const currency = document.getElementById('local_currency').value.trim().toUpperCase();
+    const bank = document.getElementById('bank_name').value.trim();
+    const accName = document.getElementById('account_name').value.trim();
+    const accDetails = document.getElementById('account_details').value.trim();
+    const amount = Number(document.getElementById('withAmount').value);
+    const account = document.getElementById('withAccount').value;
+    if(!currency || !bank || !accName){ alert('Please fill Currency, Bank, Account Name and Amount'); return; }
+
+    // FIX 1: Block negative amount and zero
+    if (isNaN(amount) || amount <= 0) {
+      alert('You cannot withdraw a negative amount or 0. Please enter an amount more than 0.');
+      return;
+    }
+
+    btn.disabled = true; btn.textContent='Processing...';
+    const { data:{ user } } = await supabaseClient.auth.getUser();
+    if(!user){ alert('Please login first'); btn.disabled=false; btn.textContent='Withdraw'; return; }
+
+let { data: balRows } = await supabaseClient.from('balances')
+  .select('amount')
+  .eq('user_id', user.id)
+  .eq('coin', 'USDT')
+  .eq('account_type', account);
+
+let have = (balRows || []).reduce((s, r) => s + Number(r.amount || 0), 0);
+    // FIX 2: Balance check must run even when balance is 0
+    if(amount > have){ alert(`Insufficient balance! You have $${have} in ${account} account`); btn.disabled=false; btn.textContent='Withdraw'; return; }
+
+    const { data, error } = await supabaseClient.from('withdrawals').insert([{
+  user_id: user.id,
+  coin: 'USDT',
+  coin_amount: Number(amount),
+  usdt_amount: Number(amount),
+  local_currency: currency,
+  bank_name: bank,
+  account_name: accName,
+  account_details: accDetails,
+  address: accName + ' - ' + bank + ' - ' + accDetails,
+  chain: currency,
+  account_type: account,
+  status: 'pending'
+}]).select().single();
+
+    if(error){ alert('Error: '+error.message); btn.disabled=false; btn.textContent='Withdraw'; return; }
+
+    currentId = data.id;
+    localStorage.setItem('nexvera_pending_withdrawal', String(data.id));
+    document.getElementById('formBox').style.display='none';
+    document.getElementById('waitingBox').style.display='block';
+    document.getElementById('waitText').innerHTML = `Your withdrawal of <b>${amount} ${currency}</b> from <b>${account}</b> account to <b>${bank} - ${accName}</b> has been sent.<br>Wait for admin approval.`;
+    startPolling();
+  }
+  function startPolling(){ if(pollTimer) clearInterval(pollTimer); pollTimer=setInterval(checkStatus,10000); }
+  async function checkStatus(){
+    if(!currentId) return;
+    let { data:d } = await supabaseClient.from('withdrawals').select('*').eq('id', currentId).single();
+    if(!d) return;
+    if(d.status==='approved'){
+      clearInterval(pollTimer);
+      localStorage.removeItem('nexvera_pending_withdrawal');
+      currentId = null;
+      document.getElementById('waitTitle').innerHTML=`✅ Approved!`;
+      document.getElementById('waitTitle').style.color='#22c55e';
+      document.getElementById('supportBtn').style.display='none';
+      document.getElementById('checkBtn').style.display='none';
+      document.getElementById('autoNote').style.display='none';
+      document.getElementById('waitText').innerHTML=`✅ <b>APPROVED!</b><br>${d.coin_amount} ${d.local_currency} withdrawn from your <b>${d.account_type}</b> account.<br><br>Redirecting...`;
+      document.getElementById('waitText').style.color='#22c55e';
+      setTimeout(()=>{ window.location.href='withrawal.html'; },2000);
+    }
+    if(d.status==='rejected'){
+      clearInterval(pollTimer);
+      localStorage.removeItem('nexvera_pending_withdrawal');
+      currentId = null;
+      document.getElementById('waitTitle').innerHTML=`❌ Rejected`;
+      document.getElementById('waitTitle').style.color='#ef4444';
+      document.getElementById('supportBtn').style.display='none';
+      document.getElementById('checkBtn').style.display='none';
+      document.getElementById('autoNote').style.display='none';
+      document.getElementById('waitText').innerHTML=`❌ <b>REJECTED</b><br>Reason: ${d.reject_reason||'Contact support'}<br><br><button onclick="window.location.reload()" style="background:#facc15;color:#000;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer">Try Again</button>`;
+      document.getElementById('waitText').style.color='#ef4444';
+    }
+  }
+</script>
+
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+
+</body>
+</html>

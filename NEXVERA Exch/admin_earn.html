@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Manage Earn</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body{ background:#0a0f1e; color:#fff; font-family:sans-serif; padding:14px; }
+  .card{ background:#111a2e; border:1px solid #26314d; border-radius:14px; padding:14px; margin-bottom:14px; }
+  input, textarea, select{ width:100%; background:#0a0f1e; border:1px solid #26314d; color:#fff; padding:10px; border-radius:8px; margin:4px 0 10px; box-sizing:border-box; }
+  label{ font-size:12px; color:#94a3b8; font-weight:700; }
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn{ border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; width:100%; }
+  .btn-save{ background:#facc15; color:#000; }
+  .btn-edit{ background:#1e293b; color:#fff; padding:8px; }
+  .btn-del{ background:#7f1d1d; color:#fff; padding:8px; }
+  .btn-toggle{ background:#14532d; color:#fff; padding:8px; }
+  .btn-grey{ background:#334155 !important; color:#94a3b8 !important; padding:8px; }
+  .item{ background:#0a0f1e; border:1px solid #26314d; border-radius:12px; padding:12px; margin-bottom:10px; }
+  .item b{ font-size:16px; }
+  .item span{ font-size:12px; color:#94a3b8; }
+</style>
+</head>
+<body>
+  <a style="color:white;" href="admin.html">back</a>
+  <h2>💰 Admin - Manage Earn / Staking</h2>
+  <p id="debug" style="background:#7f1d1d; padding:10px; border-radius:8px; display:none;"></p>
+  <p style="color:#94a3b8; font-size:13px;">Add ANY Earn or Staking here. Users see it instantly on Earn page.</p>
+
+  <div class="card">
+    <h3 id="formTitle">+ Add New Earn Product</h3>
+    <input type="hidden" id="editId">
+    <label>Title * e.g. USDT Flexible Savings</label>
+    <input id="f_title" value="USDT Flexible Savings">
+    <label>Subtitle e.g. Flexible • Anytime Withdraw</label>
+    <input id="f_subtitle" value="Flexible • Anytime Withdraw">
+    <div class="row">
+      <div><label>Coin Symbol e.g. ₮ ₿ Ξ ◎ B</label><input id="f_symbol" value="₮"></div>
+      <div><label>Coin Color Class: usdt / btc / eth / sol / bnb</label><input id="f_class" value="usdt"></div>
+    </div>
+    <div class="row">
+      <div><label>APY e.g. 12.50% APY</label><input id="f_apy" value="12.50% APY"></div>
+      <div><label>Detail e.g. Est. Daily $0.34 / $1000</label><input id="f_detail" value="Est. Daily $0.34 / $1000"></div>
+    </div>
+    <div class="row">
+      <div><label>Button Text</label><input id="f_btn" value="Subscribe"></div>
+      <div><label>Type</label>
+        <select id="f_type">
+          <option value="flexible">Flexible</option>
+          <option value="locked">Locked</option>
+          <option value="staking">Staking</option>
+        </select>
+      </div>
+    </div>
+    <label>Sort Order - lower number shows first</label>
+    <input id="f_order" type="number" value="10">
+    <label>Product Active? - Show / Hide whole card</label>
+    <select id="f_active">
+      <option value="true">✅ ACTIVE - Show to users</option>
+      <option value="false">❌ HIDDEN - Hide from users</option>
+    </select>
+    <label>🔘 Subscribe Button - Active or Grey / Inactive?</label>
+    <select id="f_button_active">
+      <option value="true">🟢 BUTTON ACTIVE - User can tap Subscribe</option>
+      <option value="false">⚪ BUTTON GREY / INACTIVE - User sees grey, cannot tap</option>
+    </select>
+    <button class="btn btn-save" onclick="saveProduct()">💾 SAVE PRODUCT</button>
+    <button class="btn" style="background:#1e293b; color:#fff; margin-top:8px;" onclick="clearForm()">Clear / Add New</button>
+    <p id="saveMsg" style="color:#22c55e; display:none; font-weight:700;">✓ Saved!</p>
+  </div>
+
+  <h3>All Earn Products (<span id="count">0</span>)</h3>
+  <div id="list">Loading...</div>
+
+<script>
+const sb = window.supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co", "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
+const adminEmail = localStorage.getItem('nexvera_admin');
+if(!adminEmail) window.location.href='admin-login.html';
+function showDebug(m){ const el=document.getElementById('debug'); el.style.display='block'; el.textContent=m; }
+loadProducts();
+async function loadProducts(){
+  const { data, error } = await sb.from('earn_products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
+  if(error){ document.getElementById('list').innerHTML="Error: "+error.message; showDebug("Error: "+error.message+" - Did you run the SQL?"); return; }
+  document.getElementById('count').textContent = data.length;
+  if(!data.length){ document.getElementById('list').innerHTML="No products yet. Fill form and Save."; return; }
+  document.getElementById('list').innerHTML = data.map(p=>{
+    const btnActive = p.button_active !== false;
+    return `
+    <div class="item">
+      <b>${p.title}</b> ${p.is_active ? '<span style="color:#22c55e;">● ACTIVE</span>' : '<span style="color:#ef4444;">● HIDDEN</span>'} ${btnActive ? '<span style="color:#22c55e;">• Button: ACTIVE</span>' : '<span style="color:#94a3b8;">• Button: GREY / INACTIVE</span>'}<br>
+      <span>${p.coin_symbol} • ${p.subtitle||''} • ${p.apy} • ${p.detail||''} • ${p.type} • Order ${p.sort_order}</span><br>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px;">
+        <button class="btn-edit" onclick="editProduct('${p.id}')">✏️ Edit</button>
+        <button class="btn-toggle" onclick="toggleProduct('${p.id}', ${!p.is_active})">${p.is_active ? 'Hide Product' : 'Show Product'}</button>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+        <button class="${btnActive ? 'btn-grey' : 'btn-toggle'}" onclick="toggleButton('${p.id}', ${!btnActive})">${btnActive ? '⚪ Make Button Grey / Inactive' : '🟢 Make Button Active'}</button>
+        <button class="btn-del" onclick="deleteProduct('${p.id}')">🗑️ Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function editProduct(id){
+  const { data } = await sb.from('earn_products').select('*').eq('id', id).single();
+  if(!data){ alert("Product not found"); return; }
+  document.getElementById('editId').value = data.id;
+  document.getElementById('formTitle').textContent = "✏️ Editing: " + data.title;
+  document.getElementById('f_title').value = data.title || '';
+  document.getElementById('f_subtitle').value = data.subtitle || '';
+  document.getElementById('f_symbol').value = data.coin_symbol || '';
+  document.getElementById('f_class').value = data.coin_class || '';
+  document.getElementById('f_apy').value = data.apy || '';
+  document.getElementById('f_detail').value = data.detail || '';
+  document.getElementById('f_btn').value = data.button_text || '';
+  document.getElementById('f_type').value = data.type || 'flexible';
+  document.getElementById('f_order').value = data.sort_order || 0;
+  document.getElementById('f_active').value = String(data.is_active);
+  document.getElementById('f_button_active').value = String(data.button_active !== false);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function saveProduct(){
+  const id = document.getElementById('editId').value;
+  const payload = {
+    title: document.getElementById('f_title').value.trim(),
+    subtitle: document.getElementById('f_subtitle').value.trim(),
+    coin_symbol: document.getElementById('f_symbol').value.trim() || '₮',
+    coin_class: document.getElementById('f_class').value.trim() || 'usdt',
+    apy: document.getElementById('f_apy').value.trim(),
+    detail: document.getElementById('f_detail').value.trim(),
+    button_text: document.getElementById('f_btn').value.trim() || 'Subscribe',
+    type: document.getElementById('f_type').value,
+    sort_order: Number(document.getElementById('f_order').value) || 0,
+    is_active: document.getElementById('f_active').value === 'true',
+    button_active: document.getElementById('f_button_active').value === 'true'
+  };
+  if(!payload.title){ alert("Title is required"); return; }
+  // FIXED: Use SECURITY DEFINER function so RLS no block Admin
+  const { data, error } = await sb.rpc('admin_manage_earn', {
+    p_admin_email: adminEmail,
+    p_action: id ? 'update' : 'insert',
+    p_id: id || null,
+    p_data: payload
+  });
+  if(error){ alert("Error: "+error.message); showDebug("Save Error: "+error.message); return; }
+  if(data && data !== 'ok'){ alert("Error: "+data); showDebug("Save Error: "+data); return; }
+  document.getElementById('saveMsg').style.display='block';
+  setTimeout(()=> document.getElementById('saveMsg').style.display='none', 2000);
+  clearForm(); loadProducts();
+}
+function clearForm(){
+  document.getElementById('editId').value='';
+  document.getElementById('formTitle').textContent="+ Add New Earn Product";
+  document.getElementById('f_title').value='';
+  document.getElementById('f_subtitle').value='';
+  document.getElementById('f_symbol').value='';
+  document.getElementById('f_class').value='';
+  document.getElementById('f_apy').value='';
+  document.getElementById('f_detail').value='';
+  document.getElementById('f_btn').value='Subscribe';
+  document.getElementById('f_type').value='flexible';
+  document.getElementById('f_order').value=10;
+  document.getElementById('f_active').value='true';
+  document.getElementById('f_button_active').value='true';
+}
+async function deleteProduct(id){
+  if(!confirm("Delete this product?")) return;
+  const { data, error } = await sb.rpc('admin_manage_earn', { p_admin_email: adminEmail, p_action: 'delete', p_id: id, p_data: {} });
+  if(error){ alert("Error: "+error.message); return; }
+  if(data && data !== 'ok'){ alert("Error: "+data); return; }
+  loadProducts();
+}
+async function toggleProduct(id, newVal){
+  // Hide / Show = update is_active only
+  const { data, error } = await sb.rpc('admin_manage_earn', { p_admin_email: adminEmail, p_action: 'update', p_id: id, p_data: { is_active: newVal } });
+  if(error){ alert("Error: "+error.message); return; }
+  if(data && data !== 'ok'){ alert("Error: "+data); return; }
+  loadProducts();
+}
+async function toggleButton(id, newVal){
+  const { data, error } = await sb.rpc('admin_manage_earn', { p_admin_email: adminEmail, p_action: 'update', p_id: id, p_data: { button_active: newVal } });
+  if(error){ alert("Error: " + error.message); return; }
+  if(data && data !== 'ok'){ alert("Error: "+data); return; }
+  loadProducts();
+}
+</script>
+</body>
+</html>

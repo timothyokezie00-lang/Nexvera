@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif !important;
+  text-transform: capitalize;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #000000;
+  color: white;
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  margin: 0 auto;
+}
+.top_box{
+  height: 200px;
+  width: 100%;
+  border: 1px soli gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+ padding-top: -30px;
+ 
+ 
+  
+}
+#down_bar{
+  margin: 0px;
+ border: none;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  
+}
+
+
+.f{
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.balance_area{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+ padding-top: 21px;
+}
+.amount{
+  display: flex;
+  flex-direction: row;
+  margin-bottom: -20px;
+  font-size: 28px;
+  color: #FFFFFF;
+  overflow: scroll;
+  text-overflow: ellipsis;
+  font-family: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums; 
+ }
+ .ppl {
+  font-size: 12px;
+  margin-top: 5px;
+  color: #9CA3AF;
+  overflow: scroll;
+  
+  
+}
+#assest1 {
+  color: #8A8A8A;
+}
+
+.lnl{
+  color: #8A8A8A;
+}
+.green{
+  color: green;
+}
+.green1{
+  color: green;
+ 
+}
+
+.ltl_bar{
+  height: 50px;
+  width: 100%;
+  border: 1px solid #222;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-top: -10px;
+  border-radius: 16px;
+ 
+}
+.identity {
+  color: white;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 17px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+.pay_area {
+  display: flex;
+  flex-direction: column;
+  padding-top: 25px;
+  padding-bottom: 15px;
+  height: 350px;
+  justify-content: space-between;
+}
+.N_pay {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #1E1E1E;
+  border-radius: 10px;
+  background-color: #1E1E1E;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ 
+ 
+ 
+}
+.n-pay{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+}
+.currency{
+  font-size: 14px;
+margin-top: 12px;
+color: #8A8A8A;
+padding: 5px;
+margin-bottom: 15px;
+font-weight: 250;
+}
+.overview {
+  
+  height: 500px;
+  margin-top: 15px;
+  border-radius: 16px;
+  background-color: black;
+  
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+ border: 1px solid #222;
+ overflow: scroll;
+}
+
+.bottom_nav {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #1f1f1f;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  border-radius: 20px 20px;
+  background-color: #0A0A0A;
+  padding: 5px;
+  box-sizing: border-box;
+  
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+.emoji{
+  padding-left: 5px;
+}
+.bn_nav{
+  font-size: 13px;
+  color: gray;
+}
+
+.divo{
+  width: 100%;
+  height: 2px;
+  border: 1px solid gray;
+  
+}
+
+
+.grouped{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  margin-top: 20px;
+ height: 700px;
+  padding: 10px;
+}
+.price{
+  font-size: 15px;
+}
+.search_box1{
+  display: flex;
+justify-content: center;
+align-items: center;
+}
+#search_box{
+  height: 28px;
+  width: 200px;
+  color: gray;
+  background-color: #141414;
+  font-size: 15px;
+  border-radius: 12px;
+ border: 0.5px solid darkgray;
+  padding-left: 10px;
+  
+}
+
+a{
+  text-decoration: none;
+  color: white;
+}
+
+.down_space{
+  height: 90px;
+  width: 100%;
+}
+.unified_trading{
+  width: 100%;
+  height: 50px;
+  border: 1px solid #222;
+  border-bottom: none;
+  display: flex;
+justify-content: space-between;
+padding: 10px;
+
+}
+.unified_funding {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #222;
+  border-top: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin-top: 30px;
+}
+#active{
+  color: white;
+  font-size: 15px;
+}
+.tt1{
+  color: #9CA3AF;
+font-weight: 400;
+padding: 5px;
+}

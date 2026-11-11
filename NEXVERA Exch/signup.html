@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Css/style_signup.css" />
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  .rule{transition:color .2s}
+  .rule.ok{color:#22c55e !important;font-weight:700}
+  .rule.ok span{color:#22c55e !important}
+</style>
+</head>
+
+<body>
+  <div class="signup_container">
+    <div class="back-page">
+      <p><a class= "backk" href="index.html">back</a></p>
+    </div>
+    <div class="sign_up">
+      <h2 class="h2">create a Nexvera account</h2>
+    </div>
+    <div class="credentials">
+      <form id="signupForm" onsubmit="return false;">
+        <div class= "fam">
+        <label for="name">full name</label>
+        <input type="text" id="name" placeholder=" john mike" required />
+      </div>
+      
+      <div class="fam">
+        <label for="password">create Password</label>
+       <input type="password" id="pwd" placeholder="John493@/.&:@" 
+       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}" title="Must have uppercase, lowercase, punctuation and 6 characters minimum" required/>
+      <div class="pwd-group">
+        <div class="rule" id="r-length"><span>●</span> min.6 characters</div>
+        <div class="rule" id="r-upper"><span>●</span> Uppercase letter</div>
+        <div class="rule" id="r-lower"><span>●</span> Lowercase letters</div>
+        <div class="rule" id="r-symbol"><span>●</span> Punctuation</div>
+      </div>
+        </div>
+      
+      <div class= "fam">
+        <label for="check-password"> Confirm password</label>
+        <input type="password" id="check-password" placeholder="Re-enter password" required />
+      </div >
+      <div class= "fam">
+        <label for="referral">Referral code</label>
+<input type="text" id="referral" placeholder="Referral code(optional)" />
+      </div>
+     
+      
+      <div class="check-box">
+        <label for="box"></label>
+       <input type="checkbox" id="box" value="yes" required/>
+       <span class="terms">i agree to NEXVERA <a href="terms.html">terms</a>  & <a href="terms.html">privacy policy</a></span>
+        
+      </div>
+      
+      
+      <div id="debug" style="color:yellow; background:#222; padding:10px; font-size:13px; margin-bottom:10px; border-radius:8px;">Status: Ready</div>
+      
+      <div class="create_account">
+<button class="acc" type="button"  id="nextBtn">Signup</button>
+ 
+ <div class=have-acc>
+  <p class="have-account">Already have an account? <a href="login.html">login</a></p>
+</div>
+</div>
+        
+      </form>
+      
+      
+    
+      
+    </div>
+    
+    
+    
+  </div>
+  
+  
+  
+<script>
+const SUPABASE_URL = "https://bximlwzpjiypajqcanse.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const debug = document.getElementById('debug');
+function show(msg){ debug.textContent = "Status: " + msg; console.log(msg); }
+
+// Password rules shine green as user types
+const pwdInput = document.getElementById('pwd');
+pwdInput.addEventListener('input', () => {
+  const v = pwdInput.value;
+  document.getElementById('r-length').classList.toggle('ok', v.length >= 6);
+  document.getElementById('r-upper').classList.toggle('ok', /[A-Z]/.test(v));
+  document.getElementById('r-lower').classList.toggle('ok', /[a-z]/.test(v));
+  document.getElementById('r-symbol').classList.toggle('ok', /[^a-zA-Z0-9]/.test(v));
+});
+
+const btn = document.getElementById('nextBtn');
+btn.addEventListener('click', async () => {
+  show("Button clicked...");
+  const email = (localStorage.getItem('nexvera_email') || '').toLowerCase().trim();
+  const country = localStorage.getItem('nexvera_country');
+  const full_name = document.getElementById('name').value.trim();
+  const password = document.getElementById('pwd').value;
+  const checkPassword = document.getElementById('check-password').value;
+  const referral = document.getElementById('referral').value.trim();
+
+  show("Email from memory: " + email);
+  if (!email) { show("ERROR: Email no found in memory"); return; }
+  if (!full_name) { show("ERROR: Enter full name"); return; }
+  if (password !== checkPassword) { show("ERROR: Passwords no match!"); return; }
+
+  btn.textContent = "Creating account...";
+  btn.disabled = true;
+  show("Sending to Supabase... wait 5 sec");
+
+  try {
+    // --- ONLY CHANGE IS HERE: Handle already-registered user from OTP ---
+    let authUser = null;
+
+    // 1. Check if user is already logged in from OTP verify
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    if (sessionData.session && sessionData.session.user && sessionData.session.user.email.toLowerCase() === email) {
+      show("Already logged in from OTP, just setting password + name...");
+      const { data: updated, error: updateError } = await supabaseClient.auth.updateUser({
+        password: password,
+        data: { full_name: full_name, username: full_name, role: 'user' }
+      });
+      if (updateError) { show("AUTH ERROR: " + updateError.message); btn.textContent = "Signup"; btn.disabled = false; return; }
+      authUser = updated.user;
+    } else {
+      // 2. Not logged in, try normal signUp
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: full_name, username: full_name, role: 'user' } }
+      });
+      if (error) {
+        // If user already exists, don't crash - send them to login
+        if (error.message.toLowerCase().includes("already registered") || error.message.toLowerCase().includes("already exists")) {
+          show("You already have an account. Please Login instead.");
+          setTimeout(() => { window.location.href = "login.html"; }, 2000);
+          btn.textContent = "Signup"; btn.disabled = false; return;
+        }
+        show("AUTH ERROR: " + error.message); btn.textContent = "Signup"; btn.disabled = false; return;
+      }
+      authUser = data.user;
+    }
+    // --- END OF ONLY CHANGE ---
+
+    show("Auth OK! User ID: " + (authUser ? authUser.id : "NULL"));
+    if (!authUser) { show("ERROR: Supabase return no user - email don already exist, use NEW email"); btn.textContent = "Signup"; btn.disabled = false; return; }
+
+    // Use authUser instead of data.user below
+    const data = { user: authUser };
+
+    show("Saving profile...");
+    // Save to users - check first, no onConflict so no crash, still blocks duplicates
+    const { data: existingUser } = await supabaseClient.from('users').select('id').eq('auth_id', data.user.id).maybeSingle();
+    let usersError = null;
+    if (existingUser) {
+      const { error } = await supabaseClient.from('users').update({ email: email, full_name: full_name, country: country, referral_code: referral || null }).eq('auth_id', data.user.id);
+      usersError = error;
+    } else {
+      const { error } = await supabaseClient.from('users').insert([{ auth_id: data.user.id, email: email, full_name: full_name, country: country, referral_code: referral || null }]);
+      usersError = error;
+    }
+    if (usersError) { show("PROFILE ERROR: " + usersError.message); btn.textContent = "Signup"; btn.disabled = false; return; }
+
+// ALSO save to profiles - this is what Dashboard/Assets read
+    const { data: existingProfile } = await supabaseClient.from('profiles').select('id').eq('id', data.user.id).maybeSingle();
+    let profilesError = null;
+    if (existingProfile) {
+      const { error } = await supabaseClient.from('profiles').update({ full_name: full_name, username: full_name, role: 'user' }).eq('id', data.user.id);
+      profilesError = error;
+    } else {
+      const { error } = await supabaseClient.from('profiles').insert([{ id: data.user.id, full_name: full_name, username: full_name, role: 'user' }]);
+      profilesError = error;
+    }
+    if (profilesError) { show("PROFILES ERROR: " + profilesError.message); btn.textContent = "Signup"; btn.disabled = false; return; }
+
+    show("SUCCESS! Going to login...");
+    localStorage.setItem('nexvera_signup_date', new Date().toISOString());
+    window.location.href = "login.html";
+  } catch (err) {
+    show("CRASH ERROR: " + err.message);
+    btn.textContent = "Signup"; btn.disabled = false;
+  }
+});
+</script>
+</body>
+
+</html>

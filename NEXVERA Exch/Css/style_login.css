@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif !important;
+  text-transform: capitalize;
+}
+body {
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+  width: 100%;
+  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 10px;
+}
+.container {
+  background-color: #1A1A1A;
+  height: 320px;
+  width: 100%;
+  border: 1px solid #2A2A2A;
+  margin-right: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  border-radius: 16px;
+  
+}
+.back{
+  margin-left: -290px;
+  margin-top: -20px;
+  font-size: 14px;
+}
+.back1{
+  color: white;
+  
+}
+.back1:hover {
+  color: yellow;
+  font-size: 19px;
+}
+.mail-label{
+ 
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+ 
+}
+.general{
+  margin-top: -10px;
+}
+.welcome{
+  margin-top: 10px;
+}
+.password-label{
+ 
+  width: 250px;
+display: flex;
+flex-direction: column;
+margin-bottom: 17px;
+}
+.login.btn{
+
+  width: 250px;
+ 
+}
+.signup_contain{
+  margin-top: -10px;
+}
+#btn{
+  height: 38px;
+  width: 100%;
+  color: gray;
+height: 45px;
+font-size: 18px;
+background-color: #2E2E2E;
+border-radius: 16px;
+font-weight: 600;
+cursor: not-allowed;
+border: none;
+font-family: inter,
+sans-serif;
+}
+.p_text{
+  font-size: 13px;
+}
+.eml{
+  height: 30px;
+  border-radius: 12px;
+background-color: #1E1E1E;
+border: 1px solid #2E2E2E;
+color: white;
+font-size: 12px;
+}
+.pwd{
+  height: 30px;
+  border-radius: 12px;
+background-color: #1E1E1E;
+border: 1px solid #2E2E2E;
+color: white;
+font-size: 12px;
+}
+.signup{
+  color: yellow;
+
+}
+form:valid #btn{
+  background-color: #F8982E;
+color: #000;
+cursor: pointer;
+box-shadow: 5px 5px 6px black;
+}

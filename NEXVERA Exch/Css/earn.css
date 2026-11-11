@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif !important;
+  text-transform: capitalize;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #000000;
+  color: white;
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  margin: 0 auto;
+}
+
+.bottom_nav {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #1f1f1f;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  border-radius: 20px 20px;
+  background-color: #0A0A0A;
+  padding: 5px;
+  box-sizing: border-box;
+  
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+.emoji{
+  padding-left: 5px;
+}
+.bn_nav{
+  font-size: 13px;
+}
+#active {
+  color: white;
+  font-size: 15px;
+}
+a {
+  text-decoration: none;
+  color: gray;
+}
+
+.full_container {
+  width: 100%;
+  height: 1000px;
+  border: 1px solid gray;
+  border-radius: 16px;
+}
+
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
+  body{background:#000;color:#fff;padding-bottom:110px;min-height:100vh}
+  /* TOP */
+  .top{padding:20px 16px 10px;display:flex;justify-content:space-between;align-items:center}
+  .top h1{font-size:24px;font-weight:800}
+  .top h1 span{color:#a78bfa}
+  .bell{width:38px;height:38px;background:#1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+  /* BALANCE CARD */
+  .balance-card{margin:10px 16px;background:linear-gradient(135deg,#6d28d9,#3b82f6);border-radius:20px;padding:20px}
+  .balance-card p{font-size:13px;opacity:.8}
+  .balance-card h2{font-size:32px;margin:6px 0 2px}
+  .balance-card span{font-size:13px;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:20px}
+  .balance-row{display:flex;gap:10px;margin-top:16px}
+  .balance-row div{flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px;text-align:center}
+  .balance-row div b{display:block;font-size:15px}
+  .balance-row div small{opacity:.7;font-size:11px}
+  /* TABS */
+  .tabs{display:flex;gap:8px;padding:16px;overflow-x:auto}
+  .tabs button{white-space:nowrap;padding:9px 16px;border-radius:20px;border:1px solid #222;background:#111;color:#aaa;font-size:13px;cursor:pointer}
+  .tabs button.active{background:#fff;color:#000;font-weight:700;border-color:#fff}
+  /* SECTION */
+  .sec-title{padding:0 16px 10px;display:flex;justify-content:space-between;align-items:center}
+  .sec-title h3{font-size:16px}
+  .sec-title a{color:#a78bfa;font-size:13px;text-decoration:none}
+  /* EARN CARD */
+  .earn-card{margin:0 16px 12px;background:#111;border:1px solid #222;border-radius:18px;padding:16px;display:flex;gap:12px;align-items:center}
+  .earn-card:active{transform:scale(.98)}
+  .coin{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .btc{background:#f7931a}.usdt{background:#26a17b}.eth{background:#627eea}.sol{background:#9945ff}.bnb{background:#f0b90b}
+  .earn-info{flex:1}
+  .earn-info b{font-size:15px;display:block}
+  .earn-info small{color:#888;font-size:12px}
+  .earn-right{text-align:right}
+  .apy{color:#22c55e;font-weight:800;font-size:16px}
+  .earn-right small{color:#888;font-size:11px;display:block}
+  .earn-btn{margin-top:8px;background:#888;color:#fff;border:none;padding:6px 14px;border-radius:20px;font-weight:700;font-size:12px}
+  /* PROMO */
+  .promo{margin:6px 16px 16px;background:#1a0f2e;border:1px solid #6d28d9;border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center}
+  .promo b{font-size:15px}.promo p{font-size:12px;color:#aaa;margin-top:4px}
+  .promo button{background:#6d28d9;color:#fff;border:none;padding:10px 16px;border-radius:20px;font-weight:700}
+  /* HOW IT WORKS */
+  .steps{margin:0 16px;display:flex;gap:10px}
+  .step{flex:1;background:#111;border:1px solid #222;border-radius:16px;padding:14px;text-align:center}
+  .step span{font-size:24px}.step b{display:block;font-size:13px;margin:8px 0 4px}.step small{color:#888;font-size:11px;line-height:1.4;display:block}

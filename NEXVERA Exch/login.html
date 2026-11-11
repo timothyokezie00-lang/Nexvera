@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Css/style_login.css" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+</head>
+
+<body>
+  <div class="container">
+    <div class="back">
+      <p><a class="back1" href="index.html">Back</a></p>
+    </div>
+    
+    <form id="loginForm">
+      
+      <div class="general">
+        <div class="welcome">
+          <h1>Welcome Back</h1>
+        </div>
+        
+        <div class="mail-label">
+          <label for="mail">Email</label>
+          <input class="eml" type="email" placeholder="Email" id="email" required />
+        </div>
+        
+        <div class="password-label">
+          <label for="Password">Password</label>
+          <input class="pwd" type="password" id="Password" placeholder="John493@/.&:@" required />
+        </div>
+        
+        <div style="text-align:right; margin-top:-17px; margin-bottom: 15px;">
+          <a href="password_reset.html" id="forgotLink" style="color: yellow; font-size:11px; text-decoration:underline;">Forgotten password?</a>
+        </div>
+        
+        <div id="status" style="color:yellow; text-align:center; margin-top:10px; font-size:13px;"></div>
+        
+        <div class="login-btn">
+          <button id="btn" type="submit">Login</button>
+          <div class="signup_contain">
+            <p class="p_text">Don't have an account yet?<a class="signup" href="verify-email.html">Signup</a></p>
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      
+    </form>
+  </div>
+  
+  
+  <script>
+    // USE SAME KEY LIKE SIGNUP.HTML - COPY AM FROM THERE
+    const SUPABASE_URL = "https://bximlwzpjiypajqcanse.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.toLowerCase().trim();
+      const password = document.getElementById('Password').value;
+      const status = document.getElementById('status');
+      status.textContent = "Checking...";
+      
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      
+      if (error) {
+        status.textContent = "LOGIN ERROR: " + error.message;
+        return;
+      }
+      
+      // --- CHECK IF USER IS SUSPENDED / DELETED ---
+      try {
+        const { data: stData } = await supabaseClient.from('user_status').select('status').eq('user_id', data.user.id).single();
+        if (stData) {
+          if (stData.status === 'suspended') {
+            await supabaseClient.auth.signOut();
+            status.textContent = "ACCOUNT SUSPENDED: Contact support. Your account has been suspended.";
+            return;
+          }
+          if (stData.status === 'deleted') {
+            await supabaseClient.auth.signOut();
+            status.textContent = "ACCOUNT DELETED: This account no longer exists.";
+            return;
+          }
+        }
+      } catch (e) { console.log('status check failed', e); }
+      // --- END SUSPEND CHECK ---
+      
+      // --- AUTO-HEAL: If profile is missing, create it now ---
+      try {
+        const { data: existing } = await supabaseClient.from('users').select('auth_id').eq('auth_id', data.user.id).maybeSingle();
+        if (!existing) {
+          const name = data.user.user_metadata?.full_name || data.user.user_metadata?.name || email.split('@')[0];
+          await supabaseClient.from('users').upsert({
+            auth_id: data.user.id,
+            email: data.user.email.toLowerCase(),
+            full_name: name,
+            country: data.user.user_metadata?.country || 'Nigeria'
+          }, { onConflict: 'auth_id' });
+          await supabaseClient.from('profiles').upsert({
+            id: data.user.id,
+            full_name: name,
+            username: name,
+            role: 'user'
+          }, { onConflict: 'id' });
+        }
+      } catch (e) { console.log('auto-heal failed', e); }
+      // --- END AUTO-HEAL ---
+      
+      status.textContent = "SUCCESS! Entering dashboard...";
+      
+      // --- SAVE IP + COUNTRY ON LOGIN ---
+      try {
+        let ipInfo = {};
+        try {
+          const r = await fetch('https://ipapi.co/json/');
+          ipInfo = await r.json();
+        } catch (e) { ipInfo = {}; }
+        
+        await supabaseClient.from('login_logs').insert([{
+          user_id: data.user.id,
+          email: data.user.email,
+          ip_address: ipInfo.ip || 'Unknown',
+          country: ipInfo.country_name || 'Unknown',
+          country_code: ipInfo.country_code || '',
+          city: ipInfo.city || '',
+          device: navigator.userAgent.slice(0, 200)
+        }]);
+      } catch (e) { console.log('login log failed', e); }
+      // --- END LOG ---
+      
+      // CHANGE THIS TO YOUR DASHBOARD FILE NAME
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+    });
+    
+    // --- FORGOT PASSWORD - NOW SENDS CODE, NOT LINK ---
+    document.getElementById('forgotLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('status');
+      let email = document.getElementById('email').value.toLowerCase().trim();
+      if (!email) {
+        email = prompt("Enter your email to reset password:")?.toLowerCase().trim() || "";
+      }
+      if (!email) {
+        status.textContent = "Please type your email first, then tap Forgot password?";
+        return;
+      }
+      status.textContent = "Sending reset code to " + email + "...";
+      // ONLY CHANGE: signInWithOtp sends CODE, not link. shouldCreateUser: false so it won't create new user
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email: email,
+        options: { shouldCreateUser: false }
+      });
+      if (error) {
+        status.textContent = "RESET ERROR: " + error.message;
+      } else {
+        localStorage.setItem('nexvera_reset_email', email);
+        status.textContent = "Reset code sent! Check your email inbox / spam.";
+        setTimeout(() => { window.location.href = "password_reset.html"; }, 1200);
+      }
+    });
+  </script>
+  
+  
+</body>
+
+</html>

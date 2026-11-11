@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexvera Admin Dashboard</title>
+<style>
+  body{background:#0a0f1e;color:#fff;font-family:Arial;margin:0;padding:16px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .logout{background:#ef4444;color:#fff;border:none;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .stat{background:#111a2e;padding:14px;border-radius:12px}
+  .stat small{color:#94a3b8}
+  .stat b{font-size:20px;display:block;margin-top:4px}
+  .tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px}
+  .tab{padding:10px 14px;background:#1e293b;border-radius:20px;border:none;color:#fff;cursor:pointer;white-space:nowrap}
+  .tab.active{background:#facc15;color:#000;font-weight:700}
+  .card{background:#111a2e;border-radius:14px;padding:16px;margin-bottom:12px}
+  .meta{color:#94a3b8;font-size:12px;margin:6px 0;line-height:1.7;word-break:break-all}
+  button{padding:10px 12px;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+  .approve{background:#22c55e;color:#fff;margin-right:8px}
+  .reject{background:#ef4444;color:#fff}
+  .small{background:#1e293b;color:#fff}
+  input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #26314d;background:#0a0f1e;color:#fff;margin-bottom:10px;box-sizing:border-box}
+  textarea{min-height:70px;resize:vertical}
+  .reason{display:none;margin-top:10px}
+  .btn-deposit{flex:1;background:#1e293b;color:#fff}
+  .btn-reward{flex:1;background:#facc15;color:#000}
+  .btn-subtract{flex:1;background:#ef4444;color:#fff}
+  .btn-suspend{background:#f59e0b;color:#000;margin-right:6px}
+  .btn-unsuspend{background:#22c55e;color:#fff;margin-right:6px}
+  .badge{display:inline-block;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-left:6px}
+  #toast{position:fixed;top:10px;left:12px;right:12px;background:#22c55e;color:#000;padding:14px;border-radius:12px;font-weight:700;text-align:center;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+  #toast.err{background:#ef4444;color:#fff}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<script>
+if(!localStorage.getItem('nexvera_admin')) window.location.href='admin-login.html';
+</script>
+<div class="top"><h2 style="margin:0">Admin Dashboard</h2><button class="logout" onclick="localStorage.removeItem('nexvera_admin');window.location.href='admin-login.html'">Logout</button></div>
+<div class="stats">
+  <div class="stat"><small>Total Users</small><b id="sUsers">0</b></div>
+  <div class="stat"><small>Pending Withdrawals</small><b id="sWithdraw">0</b></div>
+  <div class="stat"><small>Pending Deposits</small><b id="sDeposit">0</b></div>
+  <div class="stat"><small>Total USDT in Balances</small><b id="sTotal">$0</b></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('withdraw',this)">Withdrawals</button>
+  <button class="tab" onclick="showTab('deposit',this)">Deposits</button>
+  <button class="tab" onclick="showTab('users',this)">Users</button>
+  <button class="tab" onclick="showTab('history',this)">History</button>
+  <button class="tab" onclick="showTab('adjust',this)">Adjust Balance</button>
+  <button class="tab" onclick="showTab('logins',this)">Logins</button>
+  <button class="tab" onclick="showTab('notifications',this)">Notifications</button>
+  <a class="tab" href="admin_bot.html" style="text-decoration:none">Admin Bots</a>
+  <a class="tab" href="admin_earn.html" style="text-decoration:none; background:#1e293b;">💰 Earn</a>
+</div>
+<div id="content">Loading...</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+function showMsg(msg, isErr){
+  let t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = isErr ? 'err' : '';
+  t.style.display = 'block';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>{ t.style.display='none'; }, 4000);
+}
+const supabaseClient = supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co", "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
+const adminEmail = localStorage.getItem('nexvera_admin');
+let currentTab = 'withdraw';
+let cache = {balances:[], withdrawals:[], deposits:[], history:[]};
+let userNames = {};
+let userStatus = {};
+let allUserIds = [];
+function showTab(tab, btn){ currentTab = tab; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); render(); }
+async function loadAll(){
+  let { data, error } = await supabaseClient.rpc('admin_get_all', { p_admin_email: adminEmail });
+  if(error || !data || data.error){ document.getElementById('content').innerHTML = '<p>Load failed: '+(error?.message||'not admin')+'</p>'; return; }
+  cache = data;
+  let { data: cryptoW } = await supabaseClient.from('withdrawal_requests').select('*').eq('type','crypto').order('created_at',{ascending:false});
+  if(cryptoW && cryptoW.length){
+    let existingIds = new Set((cache.withdrawals||[]).map(x=>String(x.id)));
+    cryptoW.forEach(c=>{
+      if(!existingIds.has(String(c.id))) cache.withdrawals.push(c);
+    });
+  }
+  try {
+    let { data: prof } = await supabaseClient.from('profiles').select('*');
+    if(prof && prof.length){
+      prof.forEach(p=>{
+        let uid = p.user_id || p.id;
+        let name = p.full_name || p.name || p.username || ((p.first_name||'') + ' ' + (p.last_name||'')).trim() || p.email || '';
+        if(uid && name) userNames[uid] = name;
+      });
+    }
+  } catch(e){}
+  (cache.balances||[]).forEach(b=>{
+    if(b.user_id && (b.full_name || b.name || b.email) && !userNames[b.user_id]) userNames[b.user_id] = b.full_name || b.name || b.email;
+  });
+  try {
+    let { data: st, error: stErr } = await supabaseClient.from('user_status').select('*');
+    if(stErr) console.log('user_status read error:', stErr);
+    if(st) st.forEach(s=>{ userStatus[s.user_id] = s.status; });
+  } catch(e){}
+  let idSet = new Set();
+  (cache.balances||[]).forEach(b=>{ if(b.user_id) idSet.add(b.user_id); });
+  try {
+    let { data: prof2 } = await supabaseClient.from('profiles').select('user_id,id,email');
+    if(prof2) prof2.forEach(p=>{ let uid = p.user_id || p.id; if(uid) idSet.add(uid); });
+  } catch(e){}
+  try {
+    let { data: logs } = await supabaseClient.from('login_logs').select('user_id,email').order('created_at',{ascending:false}).limit(200);
+    if(logs) logs.forEach(l=>{ if(l.user_id) idSet.add(l.user_id); if(l.user_id && l.email && !userNames[l.user_id]) userNames[l.user_id] = l.email; });
+  } catch(e){}
+  allUserIds = [...idSet].filter(uid => userStatus[uid] !== 'deleted');
+  document.getElementById('sUsers').textContent = allUserIds.length;
+  document.getElementById('sWithdraw').textContent = (cache.withdrawals||[]).filter(x=>x.status==='pending').length;
+  document.getElementById('sDeposit').textContent = (cache.deposits||[]).filter(x=>x.status==='pending').length;
+  let total = (cache.balances||[]).reduce((s,b)=>s+Number(b.amount||0),0);
+  document.getElementById('sTotal').textContent = '$'+total.toFixed(2);
+  render();
+}
+function render(){
+  if(currentTab==='withdraw') loadWithdrawals();
+  if(currentTab==='deposit') loadDeposits();
+  if(currentTab==='users') loadUsers();
+  if(currentTab==='history') loadHistory();
+  if(currentTab==='adjust') loadAdjust();
+  if(currentTab==='logins') loadLogins();
+  if(currentTab==='notifications') loadNotifications();
+}
+function loadWithdrawals(){
+  let data = cache.withdrawals||[];
+  let el = document.getElementById('content');
+  if(!data.length) return el.innerHTML='<p style="color:#94a3b8">No withdrawals yet</p>';
+  el.innerHTML = data.map(w=>{
+    let amt = w.coin_amount || w.amount || 0;
+    let usdtAmt = w.usdt_amount || w.amount || 0;
+    let coinName = w.coin || 'USDT';
+    let isCrypto = w.type === 'crypto';
+    return `<div class="card"><b>${amt} ${coinName} = $${usdtAmt} USDT ${isCrypto ? '• CRYPTO' : ''} • <span style="color:${w.status==='pending'?'#facc15':w.status==='approved'?'#22c55e':'#ef4444'}">${(w.status||'').toUpperCase()}</span></b><div class="meta">User: ${w.user_id}<br>From: ${w.account_type} • To: ${w.address}<br>Chain: ${w.chain} • ${new Date(w.created_at).toLocaleString()}<br>${w.reject_reason || w.rejection_reason ? 'Reason: '+(w.reject_reason||w.rejection_reason):''}</div>${w.status==='pending'? `<input id="r-${w.id}" class="reason" placeholder="Rejection reason"><button class="approve" onclick="approveW('${w.id}',this)">Approve</button><button class="reject" onclick="rejectW('${w.id}')">Reject</button>` : ''}</div>`;
+  }).join('');
+}
+function loadDeposits(){
+  let data = cache.deposits||[];
+  let el = document.getElementById('content');
+  if(!data.length) return el.innerHTML='<p style="color:#94a3b8">No deposits yet</p>';
+  el.innerHTML = data.map(d=>`<div class="card"><b>${d.coin_amount} ${d.local_currency||d.coin||'USDT'} = $${d.coin_amount} USDT • <span style="color:${d.status==='pending'?'#facc15':d.status==='approved'?'#22c55e':'#ef4444'}">${(d.status||'').toUpperCase()}</span></b><div class="meta">User: ${d.user_id}<br>To: ${d.account_type||'funding'} • Bank: ${d.bank_name||'-'} • Method: ${d.method||d.local_currency||'-'}<br>${new Date(d.created_at).toLocaleString()}<br>${d.reject_reason? 'Reason: '+d.reject_reason:''}</div>${d.status==='pending'? `<input id="rd-${d.id}" class="reason" placeholder="Rejection reason"><button class="approve" onclick="approveD(${d.id},this)">Approve + Add Balance</button><button class="reject" onclick="rejectD(${d.id})">Reject</button>` : ''}</div>`).join('');
+}
+function loadUsers(){
+  let el = document.getElementById('content');
+  if(!allUserIds.length) return el.innerHTML='<p style="color:#94a3b8">No users/balances yet</p>';
+  let grouped = {};
+  (cache.balances||[]).forEach(b=>{ if(!grouped[b.user_id]) grouped[b.user_id]=[]; grouped[b.user_id].push(b); });
+  el.innerHTML = allUserIds.map(uid=>{
+    let rows = grouped[uid] ? grouped[uid].map(b=>`${b.coin} (${b.account_type}): $${Number(b.amount).toFixed(2)}`).join(' • ') : 'No balance yet - $0.00';
+    let name = userNames[uid] || 'Unknown Name';
+    let st = userStatus[uid] || 'active';
+    let badgeColor = st==='active' ? '#22c55e' : st==='suspended' ? '#f59e0b' : '#ef4444';
+    let badgeText = st.toUpperCase();
+    return `<div class="card"><b>${name} <span class="badge" style="background:${badgeColor};color:${st==='suspended'?'#000':'#fff'}">${badgeText}</span></b><div class="meta">User: ${uid}<br>${rows}</div><div style="display:flex;flex-wrap:wrap;gap:6px"><button class="small" onclick="copyText('${uid}')">Copy User ID</button><button class="btn-suspend" onclick="suspendUser('${uid}')">Suspend</button><button class="btn-unsuspend" onclick="unsuspendUser('${uid}')">Unsuspend</button></div></div>`;
+  }).join('');
+}
+function loadHistory(){
+  let data = cache.history||[];
+  let el = document.getElementById('content');
+  if(!data.length) return el.innerHTML='<p style="color:#94a3b8">No history yet</p>';
+  el.innerHTML = data.map(h=>`<div class="card"><b>${h.title} • $${h.amount}</b><div class="meta">User: ${h.user_id}<br>${h.detail||''}<br>${new Date(h.created_at).toLocaleString()}</div></div>`).join('');
+}
+async function loadLogins(){
+  let el = document.getElementById('content');
+  el.innerHTML = '<p style="color:#94a3b8">Loading logins...</p>';
+  let { data, error } = await supabaseClient.from('login_logs').select('*').order('created_at',{ascending:false}).limit(100);
+  if(error) return el.innerHTML = '<p>Load failed: '+error.message+'</p>';
+  if(!data || !data.length) return el.innerHTML = '<p style="color:#94a3b8">No logins yet</p>';
+  el.innerHTML = data.map(l=>`<div class="card"><b>${l.email || '-'}</b><div class="meta">IP: ${l.ip_address || '-'}<br>Country: ${l.country || '-'} ${l.country_code ? '('+l.country_code+')' : ''} • City: ${l.city || '-'}<br>User: ${l.user_id || '-'}<br>${new Date(l.created_at).toLocaleString()}<br>${l.device ? 'Device: '+l.device : ''}</div><button class="small" onclick="copyText('${l.ip_address || ''}')">Copy IP</button></div>`).join('');
+}
+function loadAdjust(){
+  document.getElementById('content').innerHTML=`<div class="card"><h3 style="margin:0 0 12px">Give Money to User</h3><input id="adjUser" placeholder="User ID (copy from Users tab)"><select id="adjAccount"><option value="funding">Funding</option><option value="trading">Trading</option></select><input id="adjAmount" type="number" placeholder="Amount in USDT e.g. 200"><label style="color:#94a3b8;font-size:12px;display:block;margin-bottom:6px;">Description - TYPE ANYTHING HERE (user will see this in History). Ignored for Deposit.</label><textarea id="adjDesc" placeholder="e.g. Welcome Bonus - New User Reward"></textarea><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn-deposit" style="width:100%" onclick="doAdjust('deposit')">Add Deposit</button><button class="btn-reward" style="width:100%" onclick="doAdjust('reward')">Give Reward</button><button class="btn-subtract" style="width:100%" onclick="doAdjust('subtract')">Subtract Balance</button></div><p style="color:#94a3b8;font-size:12px">Deposit = Balance up, P&L stays 0. Reward = Balance up, P&L goes up + History shows your description. Subtract = Balance down, never below $0.</p></div>`;
+}
+async function loadNotifications(){
+  let el = document.getElementById('content');
+  el.innerHTML = `<div class="card"><h3 style="margin:0 0 12px">Send Notification</h3><label style="color:#94a3b8;font-size:12px;">Send To</label><select id="notifTarget" onchange="document.getElementById('notifUserWrap').style.display = this.value==='specific' ? 'block' : 'none'"><option value="all">📢 All Users</option><option value="specific">👤 Specific User</option></select><div id="notifUserWrap" style="display:none"><input id="notifUserId" placeholder="Paste User ID here (copy from Users tab)"></div><input id="notifTitle" placeholder="Title e.g. New Bonus!"><textarea id="notifMessage" placeholder="Message e.g. Deposit today and get 20% bonus..."></textarea><select id="notifType"><option value="info">🔔 Info - Blue</option><option value="success">✅ Success - Green</option><option value="gold">🎉 Welcome / Gold</option><option value="promo">🎁 Promo - Purple</option><option value="warning">⚠️ Warning - Red</option></select><button class="approve" style="width:100%" onclick="sendNotification()">Send Notification</button></div><div id="notifList"><p style="color:#94a3b8">Loading notifications...</p></div>`;
+  let { data, error } = await supabaseClient.from('notifications').select('*').order('created_at',{ascending:false});
+  if(error) return document.getElementById('notifList').innerHTML = '<p>Load failed: '+error.message+'</p><p style="color:#94a3b8;font-size:12px">Create table notifications in Supabase SQL first.</p>';
+  if(!data || !data.length) return document.getElementById('notifList').innerHTML = '<p style="color:#94a3b8">No notifications yet</p>';
+  document.getElementById('notifList').innerHTML = data.map(n=>`<div class="card"><b>${n.title} ${n.user_id ? '<span class="badge" style="background:#f59e0b;color:#000">SPECIFIC USER</span>' : '<span class="badge" style="background:#22c55e;color:#fff">ALL USERS</span>'}</b><div class="meta">${n.message}<br>${n.user_id ? 'To User: '+n.user_id+'<br>' : ''}Type: ${n.type} • ${new Date(n.created_at).toLocaleString()}</div><button class="reject" type="button" data-del-notif="${n.id}">Delete</button></div>`).join('');
+}
+async function sendNotification(){
+  let target = document.getElementById('notifTarget').value;
+  let userId = document.getElementById('notifUserId') ? document.getElementById('notifUserId').value.trim() : '';
+  let title = document.getElementById('notifTitle').value.trim();
+  let message = document.getElementById('notifMessage').value.trim();
+  let type = document.getElementById('notifType').value;
+  if(!title || !message) return showMsg('Fill title and message', true);
+  if(target === 'specific' && !userId) return showMsg('Paste User ID for specific user', true);
+  let { error } = await supabaseClient.from('notifications').insert([{ title, message, type, user_id: target === 'specific' ? userId : null }]);
+  if(error) return showMsg('Send failed: ' + error.message, true);
+  showMsg(target === 'specific' ? 'Notification sent to that user ✓' : 'Notification sent to ALL users ✓');
+  loadNotifications();
+}
+async function deleteNotification(id){
+  showMsg('Deleting... ID: ' + id);
+  let { error } = await supabaseClient.from('notifications').delete().eq('id', id);
+  if(error) return showMsg('Delete failed: ' + error.message, true);
+  showMsg('Notification deleted ✓');
+  loadNotifications();
+}
+document.addEventListener('click', function(e){
+  let btn = e.target.closest('[data-del-notif]');
+  if(!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  deleteNotification(btn.getAttribute('data-del-notif'));
+});
+function copyText(t){ navigator.clipboard.writeText(t); showMsg('Copied: ' + t); }
+async function setUserStatus(uid, status, label){
+  showMsg('Working... setting ' + (userNames[uid]||uid) + ' to ' + status + '...');
+  let { data, error } = await supabaseClient.rpc('admin_set_user_status', { p_uid: uid, p_admin_email: adminEmail, p_status: status });
+  if(!error && data === 'ok'){
+    userStatus[uid] = status;
+    showMsg(label + ' done ✓');
+    loadAll();
+    return;
+  }
+  let { error: e2 } = await supabaseClient.from('user_status').upsert([{ user_id: uid, status: status }], { onConflict: 'user_id' });
+  if(e2){ showMsg('FAILED: ' + e2.message, true); return; }
+  userStatus[uid] = status;
+  showMsg(label + ' done (direct) ✓');
+  loadAll();
+}
+async function suspendUser(uid){
+  showMsg('Suspend clicked: ' + (userNames[uid]||uid));
+  await setUserStatus(uid, 'suspended', 'User suspended');
+}
+async function unsuspendUser(uid){
+  showMsg('Unsuspend clicked: ' + (userNames[uid]||uid));
+  await setUserStatus(uid, 'active', 'User unsuspended');
+}
+window.suspendUser = suspendUser;
+window.unsuspendUser = unsuspendUser;
+window.copyText = copyText;
+window.showTab = showTab;
+window.sendNotification = sendNotification;
+window.deleteNotification = deleteNotification;
+window.loadNotifications = loadNotifications;
+async function approveW(id, btn){
+  if(btn){ btn.disabled=true; btn.textContent='Processing...'; }
+  let req = (cache.withdrawals||[]).find(x=>String(x.id)===String(id));
+  if(req && req.type==='crypto'){
+    let { data: row } = await supabaseClient.from('balances').select('*').eq('user_id', req.user_id).eq('coin','USDT').eq('account_type', req.account_type).single();
+    let currentBal = row ? Number(row.amount || 0) : 0;
+    let withdrawAmt = Number(req.amount || 0);
+    if(withdrawAmt > currentBal){
+      if(btn){ btn.disabled=false; btn.textContent='Approve'; }
+      showMsg('Cannot approve: User balance is only $' + currentBal.toFixed(2) + '. Withdrawal is $' + withdrawAmt.toFixed(2), true);
+      return;
+    }
+    if(row) await supabaseClient.from('balances').update({ amount: Number(row.amount) - Number(req.amount) }).eq('id', row.id);
+    await supabaseClient.from('transactions').insert([{
+      user_id: req.user_id,
+      type: 'withdraw',
+      title: 'Withdrawal - ' + req.amount + ' USDT',
+      note: 'Withdrawal - ' + req.amount + ' USDT • From ' + req.account_type + ' • ' + req.chain,
+      amount: Number(req.amount),
+      status: 'completed'
+    }]);
+    let { error: e2 } = await supabaseClient.from('withdrawal_requests').update({ status: 'approved' }).eq('id', id);
+    if(e2){ showMsg('Approve failed: ' + e2.message, true); loadAll(); return; }
+    showMsg('Crypto Withdrawal approved ✓'); loadAll(); return;
+  }
+  let { data, error } = await supabaseClient.rpc('admin_approve_withdrawal', { p_id: id, p_admin_email: adminEmail });
+  if(!error && data==='ok'){
+    await supabaseClient.from('withdrawal_requests').update({ status: 'approved' }).eq('id', id);
+    showMsg('Withdrawal approved ✓'); loadAll(); return;
+  }
+  showMsg('Approve failed: '+(error?.message||data), true); loadAll();
+}
+async function rejectW(id){
+  let input = document.getElementById('r-'+id);
+  if(input.style.display!=='block'){ input.style.display='block'; input.focus(); return; }
+  let reason = input.value.trim(); if(!reason) return showMsg('Type reason first', true);
+  let req = (cache.withdrawals||[]).find(x=>String(x.id)===String(id));
+  if(req && req.type==='crypto'){
+    let { error: e2 } = await supabaseClient.from('withdrawal_requests').update({ status: 'rejected', rejection_reason: reason, reject_reason: reason }).eq('id', id);
+    if(e2) return showMsg('Reject failed: ' + e2.message, true);
+    showMsg('Crypto Withdrawal rejected'); loadAll(); return;
+  }
+  let { data, error } = await supabaseClient.rpc('admin_reject_withdrawal', { p_id: id, p_admin_email: adminEmail, p_reason: reason });
+  if(!error && data==='ok'){
+    await supabaseClient.from('withdrawal_requests').update({ status: 'rejected', rejection_reason: reason }).eq('id', id);
+    showMsg('Withdrawal rejected'); loadAll(); return;
+  }
+  if(error || data!=='ok') return showMsg('Reject failed: '+(error?.message||data), true);
+  showMsg('Withdrawal rejected'); loadAll();
+}
+async function approveD(id, btn){
+  if(btn){ btn.disabled=true; btn.textContent='Processing...'; }
+  let { data, error } = await supabaseClient.rpc('admin_approve_deposit', { p_id: id, p_admin_email: adminEmail });
+  if(error || data!=='ok'){ showMsg('Approve failed: '+(error?.message||data), true); loadAll(); return; }
+  showMsg('Deposit approved + Balance added ✓'); loadAll();
+}
+async function rejectD(id){
+  let input = document.getElementById('rd-'+id);
+  if(input.style.display!=='block'){ input.style.display='block'; input.focus(); return; }
+  let reason = input.value.trim(); if(!reason) return showMsg('Type reason first', true);
+  let { data, error } = await supabaseClient.rpc('admin_reject_deposit', { p_id: id, p_admin_email: adminEmail, p_reason: reason });
+  if(error || data!=='ok') return showMsg('Reject failed: '+(error?.message||data), true);
+  showMsg('Deposit rejected'); loadAll();
+}
+async function doAdjust(mode){
+  let uid=document.getElementById('adjUser').value.trim();
+  let acc=document.getElementById('adjAccount').value;
+  let amt=Number(document.getElementById('adjAmount').value);
+  let typedDesc=document.getElementById('adjDesc').value.trim();
+  if(!uid||!amt) return showMsg('Fill User ID and Amount', true);
+  if(amt <= 0) return showMsg('Amount must be more than 0', true);
+  if(mode==='subtract'){
+    let currentBal = 0;
+    (cache.balances||[]).forEach(b=>{ if(String(b.user_id)===String(uid) && String(b.account_type)===String(acc)) currentBal += Number(b.amount||0); });
+    if(currentBal === 0){
+      let { data: rows } = await supabaseClient.from('balances').select('*').eq('user_id', uid).eq('coin','USDT').eq('account_type', acc);
+      if(rows) rows.forEach(r=>{ currentBal += Number(r.amount||0); });
+    }
+    if(amt > currentBal){
+      return showMsg('Cannot subtract $' + amt.toFixed(2) + '. User balance is only $' + currentBal.toFixed(2), true);
+    }
+    let newBal = currentBal - amt;
+    let { data, error } = await supabaseClient.rpc('admin_adjust_balance', { p_uid: uid, p_admin_email: adminEmail, p_mode: 'deposit', p_amt: -Math.abs(amt), p_desc: typedDesc || 'Balance Adjustment - Admin subtract', p_acc: acc });
+    if(error || data!=='ok') return showMsg('Subtract failed: '+(error?.message||data), true);
+    showMsg('SUBTRACT $' + amt + ' done ✓ New balance $' + newBal.toFixed(2)); loadAll(); return;
+  }
+  let desc = mode==='reward' ? typedDesc : 'Deposit - Admin top-up';
+  if(mode==='reward' && !typedDesc) return showMsg('Type a Description first', true);
+  let { data, error } = await supabaseClient.rpc('admin_adjust_balance', { p_uid: uid, p_admin_email: adminEmail, p_mode: mode, p_amt: amt, p_desc: desc, p_acc: acc });
+  if(error || data!=='ok') return showMsg('Adjust failed: '+(error?.message||data), true);
+  showMsg(mode.toUpperCase() + ' $' + amt + ' sent ✓'); loadAll();
+}
+loadAll();
+</script>
+</body>
+</html>

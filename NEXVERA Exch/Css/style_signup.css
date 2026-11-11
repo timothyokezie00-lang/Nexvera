@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif !important;
+  text-transform: capitalize;
+}
+body{
+  background-color: #0A0A0A;
+color: #FFFFFF;
+width: 100%;
+max-width: 400px;
+min-height: 100vh;
+height: 100%;
+overflow-y: scroll;
+display: flex;
+justify-content: center;
+align-items: center;
+box-sizing: border-box;
+padding: 10px;
+}
+.back-page{
+  margin-right: 300px;
+  margin-top: -40px;
+  
+ 
+}
+.backk{
+  color: white;
+}
+.backk:hover{
+  color: yellow;
+  font-size: 19px;
+}
+
+.signup_container{
+  background-color: #1A1A1A;
+height: 500px;
+width: 300px;
+border: 1px solid #2A2A2A;
+margin-right: 15px;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 30px;
+border-radius: 16px;
+}
+.sign_up{
+  margin-top: -25px;
+ 
+}
+.credentials{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: -7px;
+  gap: 12px;
+}
+.fam{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+#name{
+  height: 30px;
+  border-radius: 12px;
+  background-color: #1E1E1E;
+  border: 1px solid #2E2E2E;
+  color: white;
+}
+#mail{
+  height: 30px;
+border-radius: 12px;
+background-color: #1E1E1E;
+border: 1px solid #2E2E2E;
+color: white;
+}
+#pwd{
+  height: 30px;
+border-radius: 12px;
+background-color: #1E1E1E;
+border: 1px solid #2E2E2E;
+color: white;
+
+}
+.pwd-group{
+ margin: 0px;
+  width: 100%;
+  font-size: 12px;
+  font-family: Inter;
+  color: gray;
+  margin: 0px;
+  
+}
+#check-password{
+  height: 30px;
+border-radius: 12px;
+background-color: #1E1E1E;
+border: 1px solid #2E2E2E;
+color: white;
+}
+.small_v{
+  font-size: 15px;
+  background-color: gray;
+}
+#referral{
+  height: 30px;
+border-radius: 12px;
+background-color: #1E1E1E;
+border: 1px solid #2E2E2E;
+color: white;
+}
+.check-box{
+  font-size: 10px;
+  margin-top: 2px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+.terms{
+  font-size: 12px;
+  margin-top: 5px;
+}
+a{
+  color: yellow;
+}
+.create_account{
+  display: flex;
+flex-direction: column;
+width: 100%;
+margin-top: 15px;
+}
+.acc{
+  color: gray;
+  height: 45px;
+  width: 100%;
+  font-size: 18px;
+  background-color: #2E2E2E;
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: not-allowed;
+  border: none;
+  font-family: inter,sans-serif;
+  
+}
+form:valid .acc{
+  background-color: #F8982E;
+  color: #000;
+cursor: pointer;
+box-shadow: 5px 5px 6px black;
+}
+.have-account{
+  font-size: 13px;
+
+}
+.have-acc{
+  margin-top: -10px;
+}
+.h2{
+  font-size: 22px;
+}
+.otp_btn{
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+.otp-btn{
+  background-color: gray;
+  color: white;
+  border-radius: 12px;
+}
+form:valid .otp-btn{
+  background-color: green;
+  border-radius: 12px;
+}
+.country{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.load_comfirmation{
+  width: 200px;
+}

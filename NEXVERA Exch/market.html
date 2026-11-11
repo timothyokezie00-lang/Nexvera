@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="Css/market.css" />
+</head>
+
+<body>
+  
+ 
+    
+    <div class="big-box">
+  <input class="search" id="search" placeholder="Search BTC, ETH, SOL..." onkeyup="filterCoins()">
+  <div id="list" style="text-align:center; color:#888; padding:20px;">Loading coins data...</div>
+</div>
+   
+
+    
+  
+  
+  
+  
+  <div class="bottom_nav">
+  <a href="dashboard.html"><div class="bottom_items">
+  <div class="emoji">
+    <div class="emoji-div">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+</div>
+  </div>
+  <div class="bn_nav">
+    Home
+  </div>
+  
+  
+</div></a>
+  
+  <a href="market.html"><div class="bottom_item1">
+  <div class="emoji">
+    
+    <div class="emoji-div">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+</div>
+    
+  </div>
+  <div class="bn_nav" id="active">
+    Market
+  </div>
+</div></a>
+  
+  <a href="trade.html"><div class="bottom_item2">
+  <div class="emoji">
+    
+    <div class="emoji-div">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h13l-3-3"/><path d="M20 15H7l3 3"/></svg>
+</div>
+    
+  </div>
+  <div class="bn_nav">
+    trade
+  </div>
+  
+  
+</div></a>
+  
+  <a href="earn.html"><div class="bottom_item3">
+  <div class="emoji">
+    <div class="emoji-div">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9c0-1.5-1.5-2.5-3-2.5S9 7.5 9 9c0 2 6 2 6 4 0 1.5-1.5 2.5-3 2.5S9 14.5 9 13"/></svg>
+</div>
+
+  </div>
+  <div class="bn_nav">
+    earn
+  </div>
+</div></a>
+  
+  
+  <a href="assets.html"><div class="bottom_item4">
+  <div class="emoji">
+    
+    <div class="emoji-div">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/><path d="M16 13h2"/></svg>
+</div>
+    
+  </div>
+  <div class="bn_nav">
+    Assets
+  </div>
+</div></a>
+  
+  
+  
+</div>
+
+
+
+
+
+<script>
+let allCoins = [];
+async function loadMarket(){
+  try{
+    let url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1';
+    let res = await fetch(url);
+    let data = await res.json();
+    allCoins = data;
+    showCoins(allCoins);
+  }catch(e){
+    document.getElementById('list').innerHTML = 'Network error - check internet';
+  }
+}
+function showCoins(coins){
+  let html = '';
+  coins.forEach(c => {
+    let change = c.price_change_percentage_24h || 0;
+    let isUp = change >= 0;
+    let priceText = c.current_price < 1 ? c.current_price.toFixed(4) : c.current_price.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+    html += '<div class="row"><div class="left"><img class="coin-img" src="' + c.image + '"><div><div class="sym">' + c.symbol + ' / USDT</div><div class="sub">' + c.name + '</div></div></div><div><div class="price">$' + priceText + '</div><div class="' + (isUp?'up':'down') + '" style="text-align:right;">' + (isUp?'+':'') + change.toFixed(2) + '%</div></div></div>';
+  });
+  document.getElementById('list').innerHTML = html;
+}
+function filterCoins(){
+  let q = document.getElementById('search').value.toLowerCase();
+  let filtered = allCoins.filter(c => c.symbol.includes(q) || c.name.toLowerCase().includes(q));
+  showCoins(filtered);
+}
+loadMarket();
+setInterval(loadMarket, 30000);
+</script>
+
+
+
+
+
+</body>
+
+</html>

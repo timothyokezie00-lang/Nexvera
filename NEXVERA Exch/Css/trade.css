@@ -1,0 +1,113 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  body{background:#000;color:#fff;padding:16px;padding-bottom:100px}
+  .page-title{font-size:22px;font-weight:800;margin-bottom:14px}
+  .page-title span{color:#a78bfa}
+  .search-wrap{position:relative;position:sticky;top:10px;z-index:10;margin-bottom:10px}
+  .search-wrap input{width:100%;padding:14px 14px 14px 44px;background:#111;border:1px solid #2a2a2a;border-radius:14px;color:#fff;font-size:15px;outline:none}
+  .search-wrap input:focus{border-color:#6d28d9}
+  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;opacity:.6}
+  .search-count{font-size:12px;color:#888;margin-bottom:14px}
+  .bot-card{background:#111;border:1px solid #232323;border-radius:20px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+  .bot-card.connected{border-color:#22c55e}
+  .bot-card.paid{border-color:#f59e0b;background:linear-gradient(180deg,#1a1205,#111 40%)}
+  .top_bar{display:flex;justify-content:space-between;align-items:flex-start}
+  .small_group{display:flex;gap:12px;align-items:center}
+  .user_img{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#000;flex-shrink:0}
+  .bot_name h3{font-size:16px;font-weight:800}
+  .bot_name p{font-size:13px;color:#888;margin-top:2px}
+  .bot_name small{font-size:11px;color:#22c55e}
+  .risk{font-size:11px;font-weight:700;padding:6px 10px;border-radius:20px;white-space:nowrap}
+  .risk.low{background:rgba(34,197,94,.15);color:#22c55e}
+  .risk.medium{background:rgba(245,158,11,.15);color:#f59e0b}
+  .risk.high{background:rgba(239,68,68,.15);color:#ef4444}
+  .bot_note{margin-top:14px;background:#1a1a1a;border-radius:12px;padding:12px;font-size:13px;line-height:1.5;color:#bbb}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#222;border:1px solid #222;border-radius:14px;overflow:hidden;margin-top:14px}
+  .stat{background:#111;padding:13px}
+  .stat .gray_txt{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  .stat h5{font-size:16px;margin-top:5px;font-weight:700}
+  .green{color:#22c55e}.gold{color:#f59e0b}
+  .copy-form{margin-top:14px}
+  .provider-row{display:flex;gap:10px;align-items:center;background:#1a1a1a;border-radius:12px;padding:10px 12px;border:1px solid #2a2a2a}
+  .provider-row:focus-within{border-color:#6d28d9}
+  .provider-row.error{border-color:#ef4444}
+  .provider-row.success{border-color:#22c55e}
+  .provider-row label{font-size:12px;color:#888;white-space:nowrap}
+  .provider-row input{flex:1;background:#000;border:1px solid #333;border-radius:10px;padding:10px;color:#fff;font-size:13px;outline:none;width:100%;min-width:0}
+  .provider-row input:disabled{background:#1a1a1a;color:#22c55e;font-weight:700}
+  .error-msg{font-size:11px;color:#ef4444;margin-top:6px;display:none}
+  .success-msg{font-size:11px;color:#22c55e;margin-top:6px;display:none}
+  .invested_percent{display:flex;justify-content:space-between;padding:14px 4px 4px;border-top:1px solid #222;margin-top:14px}
+  .invested_percent div{text-align:center;flex:1}
+  .invested_percent .gray_txt{font-size:11px;color:#888}
+  .invested_percent h5{font-size:14px;margin-top:4px}
+  .connect-btn{width:100%;height:52px;margin-top:14px;background:#333;color:#888;border:none;border-radius:16px;font-size:16px;font-weight:800;cursor:not-allowed;transition:.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px}
+  .copy-form:valid .connect-btn:not(.is-connected){background:#fff;color:#000;cursor:pointer}
+  .connect-btn.is-connected{background:#22c55e !important;color:#fff !important;cursor:pointer}
+  .no-result{text-align:center;color:#888;padding:30px 0;display:none}
+  .badge{font-size:10px;background:#6d28d9;color:#fff;padding:3px 7px;border-radius:20px;margin-left:5px;vertical-align:middle}
+  .badge-connected{font-size:10px;background:#22c55e;color:#fff;padding:4px 8px;border-radius:20px;margin-left:5px;vertical-align:middle}
+  .paid-banner{background:linear-gradient(135deg,#f59e0b,#ef4444);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
+  .paid-banner b{font-size:14px;color:#000;line-height:1.3;display:block}
+  .paid-banner p{font-size:12px;color:#000;opacity:.8;margin-top:4px;line-height:1.4}
+  .paid-banner span{font-size:22px;flex-shrink:0}
+  .pay-btn{width:100%;height:52px;margin-top:12px;background:#f59e0b;color:#000;border:none;border-radius:16px;font-size:16px;font-weight:800;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px}
+  .pay-btn:active{transform:scale(.98)}
+  .locked-note{font-size:12px;color:#f59e0b;text-align:center;margin-top:8px;line-height:1.5}
+  .popup{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+  .popup-box{background:#1a1a1a;border:1px solid #333;border-radius:20px;padding:24px;text-align:center;width:100%;max-width:340px}
+  .popup-box .icon{font-size:40px}
+  .popup-box h3{margin:10px 0 6px}
+  .popup-box p{font-size:13px;color:#aaa;line-height:1.6}
+  .popup-box .price{font-size:32px;font-weight:800;color:#f59e0b;margin:10px 0 2px}
+  .popup-box .price small{font-size:13px;color:#888;font-weight:400}
+  .popup-box button{margin-top:12px;width:100%;padding:13px;background:#fff;color:#000;border:none;border-radius:12px;font-weight:800;font-size:15px}
+  .popup-box button.gold{background:#f59e0b}
+  .popup-box button.ghost{background:transparent;color:#aaa;border:1px solid #333}
+  
+  
+  
+  
+  .bottom_nav {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #1f1f1f;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  border-radius: 20px 20px;
+  background-color: #0A0A0A;
+  padding: 5px;
+  box-sizing: border-box;
+  z-index: 999;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+.emoji{
+  padding-left: 5px;
+}
+.bn_nav{
+  font-size: 13px;
+}
+#active {
+  color: white;
+  font-size: 15px;
+}
+a {
+  text-decoration: none;
+  color: gray;
+}
+.full_container{
+  width: 100%;
+  height: 1000px;
+  border: 1px solid gray;
+  border-radius: 16px;
+}
+.emoji_div{
+  color: gray;
+}
+.bottom_item{
+  color: gray;
+}
