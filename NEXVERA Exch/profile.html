@@ -35,6 +35,34 @@
   .history-right { text-align:right; white-space:nowrap; margin-left:10px; }
   .history-amount { font-weight:700; font-size:14px; }
   .history-status { font-size:11px; margin-top:2px; }
+
+  /* FIX SCROLL - OVERRIDE profil.css LOCK */
+  html, body{
+    margin:0 !important;
+    padding:0 !important;
+    height:auto !important;
+    min-height:100dvh !important;
+    max-height:none !important;
+    display:block !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    overflow:visible !important;
+    position:static !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+  body{
+    padding-bottom:40px !important;
+    padding-bottom:env(safe-area-inset-bottom,40px) !important;
+  }
+  .history_box, .all_history, .profile-head, .footer{
+    overflow:visible !important;
+    max-height:none !important;
+    height:auto !important;
+  }
+  .logout{
+    position:relative !important;
+    z-index:10 !important;
+  }
 </style>
 </head>
 <body>
