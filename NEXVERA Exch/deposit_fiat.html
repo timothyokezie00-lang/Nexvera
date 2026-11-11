@@ -13,6 +13,7 @@ body{padding:16px 0 32px 0!important;padding-top:env(safe-area-inset-top,16px)!i
 .dp_section,.dp_section *{box-sizing:border-box!important}
 .dp_section label{display:block!important;text-align:center!important;font-weight:600!important;margin:0 0 6px 0!important}
 .dp_section input,.dp_section select,.box,#local_currency,#depAmount,#Bank_name,#depAccount{width:100%!important;padding:14px 12px!important;border-radius:12px!important;font-size:15px!important;margin:0 0 12px 0!important;display:block!important;text-align:center!important}
+#local_currency{color:#000!important;background:#fff!important;font-weight:700!important}
 #m_btn{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:16px!important;font-weight:700!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;margin:0!important}
 #waitingBox button{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:15px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
 h2{text-align:center!important}
@@ -25,7 +26,7 @@ h2{text-align:center!important}
 <div class="back" style="margin-top:48px!important;padding-top:12px!important"><a class="b_ack" href="deposit_option.html" style="margin-top:0!important">← back</a></div>
 <h2 id="pageTitle">Enter deposit details</h2>
 <div class="dp_section" id="formBox"><form id="depForm" onsubmit="return false;">
-<div class="grp"><label for="local_currency">local Currency</label><input class="box" type="text" id="local_currency" placeholder="USD,GBP,EU" minlength="3" maxlength="3" required/></div>
+<div class="grp"><label for="local_currency">local Currency</label><input class="box" type="text" id="local_currency" value="USD" readonly /></div>
 <div class="grp"><label for="amount">Amount</label><input id="depAmount" class="box" type="number" min="1" step="0.01" placeholder="20000" required/></div>
 <div class="grp"><label for="Bank_name">Bank name</label><input class="box" type="text" id="Bank_name" placeholder="chasebank,bank of america etc.... " required/></div>
 <select id="depAccount"><option value="funding">Funding account</option><option value="trading">Trading account</option></select>

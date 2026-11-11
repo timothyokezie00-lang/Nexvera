@@ -7,13 +7,13 @@
 html,body{margin:0;padding:0;min-height:100dvh;height:auto!important;display:block!important;overflow-y:auto!important;overflow-x:hidden!important}
 body{padding:16px 0 32px 0!important;padding-top:env(safe-area-inset-top,16px)!important;padding-bottom:env(safe-area-inset-bottom,32px)!important}
 .container,.signup_container,.card{margin:0 auto!important;width:100%!important}
-.container{background:transparent!important;border:none!important;box-shadow:none!important;outline:none!important;padding:0 16px 24px 16px!important;overflow:visible!important}
-/* FIX ONLY BACK - BRING AM DOWN WITH MARGIN */
+.container{background:transparent!important;border:none!important;box-shadow:none!important;outline:none!important;padding:0 16px 24px 24px!important;overflow:visible!important}
 .back{width:100%!important;min-height:38px!important;display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:10!important;overflow:visible!important;text-align:left!important;margin:48px 0 12px 0!important;padding:12px 0 0 0!important;top:auto!important;left:auto!important;transform:none!important}
 .back a,.b_ack{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;min-height:36px!important;padding:8px 14px!important;background:#1e293b!important;color:#fff!important;border-radius:10px!important;text-decoration:none!important;font-weight:700!important;font-size:14px!important;border:none!important;margin-top:0!important}
 .dp_section,.dp_section *{box-sizing:border-box!important}
 .dp_section label{display:block!important;text-align:center!important;font-weight:600!important;margin:0 0 6px 0!important}
 .dp_section input,.dp_section select,.box,#local_currency,#bank_name,#account_name,#account_details,#withAmount,#withAccount{width:100%!important;padding:14px 12px!important;border-radius:12px!important;font-size:15px!important;margin:0 0 12px 0!important;display:block!important;text-align:center!important}
+#local_currency{color:#000!important;background:#fff!important;font-weight:700!important}
 #m_btn{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:16px!important;font-weight:700!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;margin:0!important}
 #waitingBox button{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:15px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
 h3{text-align:center!important}
@@ -23,7 +23,7 @@ h3{text-align:center!important}
 <div class="back" style="margin-top:48px!important;padding-top:12px!important"><a class="b_ack" href="withrawal.html" style="margin-top:0!important">← back</a></div>
 <h3>Enter withdrawal details</h3>
 <div class="dp_section" id="formBox"><form onsubmit="return false;">
-<div class="grp"><label for="local_currency">local Currency</label><input class="box" type="text" id="local_currency" placeholder="USD,GBP,EU" minlength="3" maxlength="3" required/></div>
+<div class="grp"><label for="local_currency">local Currency</label><input class="box" type="text" id="local_currency" value="USD" readonly /></div>
 <div class="grp"><label for="bank_name">Bank name</label><input class="box" type="text" id="bank_name" placeholder="chasebank, bank of america etc...." required/></div>
 <div class="grp"><label for="account_name">Account name</label><input class="box" type="text" id="account_name" placeholder="Mike...." required/></div>
 <div class="grp"><label for="account_details">Other</label><input class="box" type="text" id="account_details" placeholder="other info / sort-code / optional"/></div>
