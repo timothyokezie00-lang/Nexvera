@@ -7,7 +7,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // USER DASHBOARD LOCK - Supabase version
   (async function() {
     try {
       const _sb = window.supabase.createClient('https://bximlwzpjiypajqcanse.supabase.co', 'sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV');
@@ -16,7 +15,6 @@
         window.location.href = 'login.html';
       }
     } catch (e) {
-      // If check fail, still bounce to login to be safe
       window.location.href = 'login.html';
     }
   })();
@@ -25,7 +23,6 @@
 <link rel="stylesheet" href="Css/profil.css" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  /* History rows - fits your black theme */
   .history-row { display:flex; justify-content:space-between; align-items:center; padding:12px 8px; border-bottom:1px solid #222; }
   .history-row:last-child { border-bottom:none; }
   .history-left { flex:1; text-align:left; }
@@ -36,7 +33,7 @@
   .history-amount { font-weight:700; font-size:14px; }
   .history-status { font-size:11px; margin-top:2px; }
 
-  /* FIX SCROLL - OVERRIDE profil.css LOCK */
+  /* FIX SCROLL */
   html, body{
     margin:0 !important;
     padding:0 !important;
@@ -59,9 +56,37 @@
     max-height:none !important;
     height:auto !important;
   }
-  .logout{
+
+  /* FIX LOGOUT NOT SHOWING - FORCE AM VISIBLE */
+  .logout-wrap{
+    display:block !important;
+    visibility:visible !important;
+    width:100% !important;
+    padding:20px 16px 8px 16px !important;
+    box-sizing:border-box !important;
     position:relative !important;
-    z-index:10 !important;
+    z-index:99 !important;
+  }
+  #logoutBtn, .logout{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:50px !important;
+    padding:14px !important;
+    margin:0 !important;
+    background:#FF3B30 !important;
+    background-color:#FF3B30 !important;
+    color:#fff !important;
+    border:none !important;
+    border-radius:12px !important;
+    font-size:16px !important;
+    font-weight:700 !important;
+    text-align:center !important;
+    cursor:pointer !important;
+    position:relative !important;
+    z-index:99 !important;
   }
 </style>
 </head>
@@ -112,23 +137,17 @@
   </div>
 </div>
 
-<div >
+<div class="logout-wrap">
   <button class="logout" id="logoutBtn" type="button">Logout</button>
 </div>
 
-  
-
 <!-- FOOTER - ONLY ABOUT US -->
 <div class="footer">
-  
   <a style="text-decoration: underline; " href="#">provider</a>
-  
   <a  href="about_us.html"> About Us →</a>
-  
 </div>
 
 <script>
-// --- USE SAME SUPABASE KEYS AS dashboard.html ---
 const SUPABASE_URL = "https://bximlwzpjiypajqcanse.supabase.co";
 const SUPABASE_KEY = "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -136,42 +155,32 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 async function loadProfile() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) { window.location.href = 'login.html'; return; }
-
-  // Name + UID - real, not hardcoded Timothy
   let name = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.username || user.email.split('@')[0];
   document.getElementById('profileName').textContent = name;
-  document.getElementById('profileUid').textContent = user.id.slice(0, 8); // short UID
-
-  // HISTORY - all fund movements
+  document.getElementById('profileUid').textContent = user.id.slice(0, 8);
   let { data: txs, error } = await supabaseClient.from('transactions')
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(30);
-
   const box = document.getElementById('historyList');
   if (error) { box.innerHTML = '<p style="text-align:center;color:#FF3B30;padding:16px;">ERR: ' + error.message + '</p>'; return; }
   if (!txs || txs.length === 0) {
     box.innerHTML = '<p style="text-align:center; color:#888; padding:16px;">No fund movements yet</p>';
     return;
   }
-
   let html = '';
   txs.forEach(t => {
     let label = t.note || t.detail || t.title || t.type;
-
     const isOut = t.type === 'withdraw' || t.direction === 'out';
     const sign = isOut ? '-' : '+';
     const amountColor = isOut ? '#FF3B30' : '#00D26A';
-
     const status = (t.status || 'completed').toLowerCase();
     let statusColor = '#00D26A', statusText = 'Successful';
     if (status === 'pending') { statusColor = '#FFB800'; statusText = 'Pending'; }
     if (status === 'failed' || status === 'rejected') { statusColor = '#FF3B30'; statusText = 'Failed'; }
-
     const d = new Date(t.created_at);
     const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-
     html += `
       <div class="history-row">
         <div class="history-left">
@@ -186,12 +195,10 @@ async function loadProfile() {
   });
   box.innerHTML = html;
 }
-
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
   window.location.href = 'login.html';
 });
-
 loadProfile();
 </script>
 
