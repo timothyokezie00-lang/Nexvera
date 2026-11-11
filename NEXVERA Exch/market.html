@@ -6,6 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
   <link rel="stylesheet" href="Css/market.css" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // USER DASHBOARD LOCK - Supabase version
+  (async function() {
+    try {
+      const _sb = window.supabase.createClient('https://bximlwzpjiypajqcanse.supabase.co', 'sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV');
+      const { data: { user } } = await _sb.auth.getUser();
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    } catch (e) {
+      // If check fail, still bounce to login to be safe
+      window.location.href = 'login.html';
+    }
+  })();
+</script>
+  
 </head>
 
 <body>

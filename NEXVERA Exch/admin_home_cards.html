@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin - Home Cards</title><style>body{background:#000;color:#fff;font-family:sans-serif;padding:16px}input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#111;color:#fff;box-sizing:border-box}button{width:100%;padding:14px;border:none;border-radius:10px;font-weight:800;cursor:pointer}label{font-size:12px;color:#94a3b8}.card{background:#111a2e;border:1px solid #26314d;border-radius:14px;padding:14px;margin:12px 0}.back{display:inline-flex;align-items:center;gap:6px;background:#1e293b;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:700;font-size:14px;margin-bottom:14px}</style></head>
+<body>
+
+<!-- BACK BUTTON -->
+<a class="back" href="admin.html">← Back to Admin</a>
+
+<h2>Edit Home Cards</h2><p style="color:#94a3b8;font-size:13px">Change anything here, press Save — user dashboard go update by itself.</p><div id="list"></div>
+<button onclick="addCard()" style="background:#1e293b;color:#fff;margin-bottom:12px">+ Add New Card</button>
+<button onclick="saveAll()" style="background:#facc15;color:#000">Save All</button><p id="msg"></p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb=supabase.createClient('https://bximlwzpjiypajqcanse.supabase.co','sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV');
+
+/* ===== ADMIN LOCK - SAME AS admin.html ===== */
+/* admin.html dey use localStorage, no be Supabase login, so we use same check */
+if(!localStorage.getItem('nexvera_admin')){ window.location.href='admin-login.html'; }
+/* ===== END LOCK ===== */
+
+let cards=[];
+async function load(){let res=await sb.from('home_cards').select('*').order('sort_order');cards=res.data||[];if(cards.length===0){cards=[{title:'explore hot',middle:'checkout',middle_link:'trade.html',bottom_text:'GOLD HUNTER  >',bottom_link:'trade.html'},{title:'quick earn',middle:'checkout',middle_link:'trade.html',bottom_text:'nex V Era  >',bottom_link:'trade.html'}]}render()}
+function render(){document.getElementById('list').innerHTML=cards.map((c,i)=>'<div class="card"><label>Top grey word</label><input data-f="title" data-i="'+i+'" value="'+(c.title||'')+'"><label>Blue word</label><input data-f="middle" data-i="'+i+'" value="'+(c.middle||'')+'"><label>Blue word link</label><input data-f="middle_link" data-i="'+i+'" value="'+(c.middle_link||'')+'"><label>Underline word</label><input data-f="bottom_text" data-i="'+i+'" value="'+(c.bottom_text||'')+'"><label>Underline word link</label><input data-f="bottom_link" data-i="'+i+'" value="'+(c.bottom_link||'')+'"><button onclick="delCard('+i+')" style="background:#ef4444;color:#fff;margin-top:8px">Delete This Card</button></div>').join('');document.querySelectorAll('input').forEach(el=>{el.oninput=function(){cards[Number(el.dataset.i)][el.dataset.f]=el.value}})}
+function addCard(){cards.push({title:'new',middle:'checkout',middle_link:'trade.html',bottom_text:'NEW  >',bottom_link:'trade.html'});render()}
+function delCard(i){cards.splice(i,1);render()}
+async function saveAll(){document.getElementById('msg').textContent='Saving...';await sb.from('home_cards').delete().neq('id',0);for(let i=0;i<cards.length;i++){await sb.from('home_cards').insert([{title:cards[i].title,middle:cards[i].middle,middle_link:cards[i].middle_link,bottom_text:cards[i].bottom_text,bottom_link:cards[i].bottom_link,sort_order:i+1}])}document.getElementById('msg').textContent='Saved! User dashboard don update.'}
+load();
+</script></body></html>

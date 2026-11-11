@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexvera Admin Dashboard</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nexvera Admin Dashboard</title>
+<script>
+  if (!localStorage.getItem('nexvera_admin')) window.location.href = 'admin-login.html';
+</script>
 <style>
   body{background:#0a0f1e;color:#fff;font-family:Arial;margin:0;padding:16px}
   .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
@@ -32,36 +30,11 @@
   .badge{display:inline-block;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-left:6px}
   #toast{position:fixed;top:10px;left:12px;right:12px;background:#22c55e;color:#000;padding:14px;border-radius:12px;font-weight:700;text-align:center;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5)}
   #toast.err{background:#ef4444;color:#fff}
-  
-  html, body {
-    margin: 0; padding: 0;
-    min-height: 100dvh;
-    width: 100%;
-    display: block;
-    overflow-x: hidden;
-  }
-  body {
-    padding: 0;
-    align-items: normal;
-    justify-content: normal;
-  }
-  .container, .dashboard, .main {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    padding: 12px;
-    box-sizing: border-box;
-    overflow-x: auto;
-  }
-  table {
-    width: 100%;
-    min-width: 600px;
-    display: block;
-    overflow-x: auto;
-  }
-  
-</style>
-</head>
+  html, body {margin: 0; padding: 0;min-height: 100dvh;width: 100%;display: block;overflow-x: hidden;}
+  body {padding: 0;align-items: normal;justify-content: normal;}
+  .container, .dashboard, .main {width: 100% !important;max-width: 100% !important;margin: 0 auto !important;padding: 12px;box-sizing: border-box;overflow-x: auto;}
+  table {width: 100%;min-width: 600px;display: block;overflow-x: auto;}
+</style></head>
 <body>
 <div id="toast"></div>
 <script>
@@ -84,6 +57,7 @@ if(!localStorage.getItem('nexvera_admin')) window.location.href='admin-login.htm
   <button class="tab" onclick="showTab('notifications',this)">Notifications</button>
   <a class="tab" href="admin_bot.html" style="text-decoration:none">Admin Bots</a>
   <a class="tab" href="admin_earn.html" style="text-decoration:none; background:#1e293b;">💰 Earn</a>
+  <a class="tab" href="admin_home_cards.html" style="text-decoration:none; background:#facc15; color:#000; font-weight:700;">🏠 Home Cards</a>
 </div>
 <div id="content">Loading...</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -369,5 +343,4 @@ async function doAdjust(mode){
 }
 loadAll();
 </script>
-</body>
-</html>
+</body></html>

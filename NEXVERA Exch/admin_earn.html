@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin - Manage Earn</title>
+
+<script>
+  if (!localStorage.getItem('nexvera_admin')) window.location.href = 'admin-login.html';
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   body{ background:#0a0f1e; color:#fff; font-family:sans-serif; padding:14px; }

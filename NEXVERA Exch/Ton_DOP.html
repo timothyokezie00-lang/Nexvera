@@ -1,231 +1,52 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-  <link rel="stylesheet" href="Css/All_DOP.css" />
-  <style>
-    #waitingBox{display:none;text-align:center;padding:20px}
-    #waitingBox h4{color:#facc15}
-    .checkBtn{display:block;background:#1e293b;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;border:none;width:100%;cursor:pointer}
-    #msg{display:none;padding:10px;border-radius:8px;margin-bottom:10px;font-weight:700;text-align:center}
-    
-    
-  html, body {
-    margin: 0; padding: 0;
-    min-height: 100dvh;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .container, .signup_container, .card {
-    margin: auto !important;
-    width: 100%;
-  }
-
-    
-  </style>
-</head>
-
-<body>
-  <div class="container">
-  
-  <div id="return">
-    <a href="withrawal_coin_option.html">Back</a>
-  </div>
-  
-  <div class="everthing">
-    
-    <!-- FORM - your exact USDC form -->
-    <div id="formBox">
-    <form onsubmit="return false;">
-      
-      
-      <div class="all_box">
-        
-        <div id="msg"></div>
-        
-        <div class="inpu">
-          <label for="Amount">Amount ($)</label><input type="number" id="Amount" min="1" step="0.01" value="" placeholder="20000" required/>
-        </div>
-        
-<div style="margin-bottom:12px">
-  <label>Withdraw From</label><br>
-  <select id="withdrawFrom" style="width:98%;padding:12px;border-radius:10px">
-    <option value="funding">Funding Account</option>
-    <option value="trading">Trading Account</option>
-  </select>
-</div>
-        
-        <div class="inpu">
-          <label for="Bitcoin_adress">USDC adress</label>
-          <input type="text" name="" id="Bitcoin_address" placeholder="0x0972hshs2829926278484" minlength="7" required/>
-        </div>
-        
-        <div>
-          <select id="withdrawChain" required>
-  <option value="" disabled selected>Choose a Chain Type</option>
-  <option value="Ethereum (ERC20)">Ethereum (ERC20)</option>
-  <option value="TRON (TRC20)">TRON (TRC20)</option>
-  <option value="BSC (BEP20)">BSC (BEP20)</option>
-  <option value="APTOS">APTOS</option>
-  <option value="TON">TON</option>
-  <option value="SOL">SOL</option>
-  <option value="Polygon PoS">Polygon PoS</option>
-  <option value="Arbitrum One (USDT0)">Arbitrum One (USDT0)</option>
-</select>
-        </div>
-
-       
-        
-        <div class="butt">
-          <button id="withdrawBtn" onclick="requestWithdraw()" class="butt1" type="button">Withraw</button>
-        </div>
-      </div>
-      
-    </form>
-    </div>
-
-    <!-- WAITING - same as ETH / BTC / SOL, same page -->
-    <div id="waitingBox">
-      <h4>🔄 Transaction Processing</h4>
-      <p id="waitText" style="color:#94a3b8;line-height:1.6">Your withdrawal request has been sent.</p>
-      <button onclick="openSupport()" style="width:100%; background:#22c55e; color:#fff; border:none; padding:14px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; margin:14px 0;">💬 Chat Support</button>
-      <button class="checkBtn" onclick="checkStatus()">Check Status 🔄</button>
-      <p style="font-size:12px;color:#94a3b8;margin-top:12px">This page checks automatically every 10 seconds. Keep it open.</p>
-    </div>
-    
-    <div class="bottom_note">
-      
-      NOTE:
-<li>make sure that the chain type you make deposits to is the one you make withrawals from!!!</li>
-
-<li>All chains that are not listed is not supported by nexvera</li>
-
-<li>Cross check deposit address and chains, crypto transactions are irreversible!!!</li>
-      
-      
-    </div>
-    
-  </div>
-  
-</div>
-
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title></title><link rel="stylesheet" href="Css/All_DOP.css" />
+<style>
+#waitingBox{display:none;text-align:center}
+.checkBtn{display:block;background:#1e293b;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;border:none;width:100%;cursor:pointer}
+#msg{display:none;padding:10px;border-radius:8px;margin-bottom:10px;font-weight:700;text-align:center}
+html,body{margin:0;padding:0;min-height:100dvh;display:flex;align-items:center;justify-content:center}
+.container,.signup_container,.card{margin:auto!important;width:100%}
+.container{background:transparent!important;border:none!important;box-shadow:none!important;outline:none!important;padding:0 16px!important;overflow:hidden!important}
+#return{width:100%!important;text-align:left!important;align-self:flex-start!important;margin:0 0 12px 0!important}
+#return a{display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:8px 14px!important;background:#1e293b!important;color:#fff!important;border-radius:10px!important;text-decoration:none!important;font-weight:700!important;font-size:14px!important}
+.all_box,.all_box *{box-sizing:border-box!important}
+.all_box label{display:block!important;text-align:center!important;font-weight:600!important;margin:0 0 6px 0!important}
+.all_box input,.all_box select{width:100%!important;padding:14px 12px!important;border-radius:12px!important;font-size:15px!important;margin:0 0 12px 0!important;display:block!important;text-align:center!important}
+.butt1,#withdrawBtn{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:16px!important;font-weight:700!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;margin:0!important}
+#waitingBox button{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:15px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+.everthing{padding:0!important;width:100%!important;box-sizing:border-box!important;margin:0!important}
+#waitingBox{padding:0!important;margin:0!important;width:100%!important;box-sizing:border-box!important}
+.bottom_note{margin-top:12px!important}
+</style></head>
+<body><div class="container">
+<div id="return"><a href="withrawal_coin_option.html">← Back</a></div>
+<div class="everthing">
+<div id="formBox"><form onsubmit="return false;"><div class="all_box">
+<div id="msg"></div>
+<div class="inpu"><label for="Amount">Amount ($)</label><input type="number" id="Amount" min="1" step="0.01" placeholder="20000" required/></div>
+<div style="margin:0 0 12px 0"><label>Withdraw From</label><select id="withdrawFrom"><option value="funding">Funding Account</option><option value="trading">Trading Account</option></select></div>
+<div class="inpu"><label for="Bitcoin_adress">USDC adress</label><input type="text" id="Bitcoin_address" placeholder="0x0972hshs2829926278484" minlength="7" required/></div>
+<div><select id="withdrawChain" required><option value="" disabled selected>Choose a Chain Type</option><option value="Ethereum (ERC20)">Ethereum (ERC20)</option><option value="TRON (TRC20)">TRON (TRC20)</option><option value="BSC (BEP20)">BSC (BEP20)</option><option value="APTOS">APTOS</option><option value="TON">TON</option><option value="SOL">SOL</option><option value="Polygon PoS">Polygon PoS</option><option value="Arbitrum One (USDT0)">Arbitrum One (USDT0)</option></select></div>
+<div class="butt"><button id="withdrawBtn" onclick="requestWithdraw()" class="butt1" type="button">Withraw</button></div>
+</div></form></div>
+<style>.nv-proc-card{background:#111a2e;border:1px solid #26314d;border-radius:20px;padding:26px 20px 20px;text-align:center;width:100%!important;box-sizing:border-box!important}.nv-spinner{width:64px;height:64px;margin:0 auto 14px;border:4px solid #1e293b;border-top:4px solid #facc15;border-radius:50%;animation:spin 1s linear infinite;display:flex;align-items:center;justify-content:center;font-size:22px}@keyframes spin{to{transform:rotate(360deg)}}.nv-proc-card h4{margin:0;font-size:20px;color:#fff!important}.nv-proc-amt{font-size:28px;font-weight:800;color:#facc15;margin:10px 0 2px}.nv-steps{display:flex;justify-content:space-between;margin:18px 0;text-align:center}.nv-step{flex:1;font-size:11px;color:#94a3b8;line-height:1.4}.nv-dot{width:28px;height:28px;margin:0 auto 6px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}.nv-dot.done{background:#22c55e;color:#fff}.nv-dot.active{background:#facc15;color:#000}.nv-dot.todo{background:#1e293b;color:#64748b}.nv-proc-details{background:#0a0f1e;border-radius:12px;padding:12px 14px;text-align:center;margin:12px 0;font-size:13px;color:#cbd5e1;line-height:1.7}</style>
+<div id="waitingBox"><div class="nv-proc-card"><div class="nv-spinner">⟳</div><h4 id="waitTitle">Transaction Processing</h4><p style="color:#94a3b8;font-size:13px;margin:6px 0 0">Please wait while we process your withdrawal.</p><div class="nv-proc-amt" id="waitAmount">—</div><div class="nv-proc-details" id="waitText">Your withdrawal request has been sent.</div><div class="nv-steps"><div class="nv-step"><div class="nv-dot done">✓</div>Request<br>Sent</div><div class="nv-step"><div class="nv-dot active">2</div>Processing<br><span style="color:#facc15">In Progress</span></div><div class="nv-step"><div class="nv-dot todo">3</div>Approved<br>& Paid</div></div><button onclick="openSupport()" style="background:#22c55e;color:#fff;border:none;margin:14px 0;">💬 Chat Support</button><button class="checkBtn" onclick="checkStatus()">Check Status 🔄</button><p style="font-size:12px;color:#94a3b8;margin-top:12px">This page checks automatically every 10 seconds. Keep it open.</p></div></div>
+<div class="bottom_note" id="bottomNote">NOTE:<li>make sure that the chain type you make deposits to is the one you make withrawals from!!!</li><li>All chains that are not listed is not supported by nexvera</li><li>Cross check deposit address and chains, crypto transactions are irreversible!!!</li></div>
+</div></div>
+<style>.nv-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;padding:20px}.nv-overlay.show{display:flex}.nv-card{background:#111a2e;width:100%;max-width:360px;border-radius:20px;padding:28px 22px 22px;text-align:center;border:1px solid #26314d}.nv-check{width:68px;height:68px;margin:0 auto 14px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff}.nv-card h2{margin:0;font-size:22px;color:#fff}.nv-card p.sub{color:#94a3b8;font-size:13px;margin:6px 0 18px;line-height:1.5}.nv-amount{font-size:28px;font-weight:800;color:#facc15;margin:4px 0 2px}.nv-details{background:#0a0f1e;border-radius:12px;padding:14px;text-align:center;margin:16px 0;font-size:13px}.nv-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e293b}.nv-row:last-child{border:none}.nv-row span:first-child{color:#94a3b8}.nv-row span:last-child{color:#fff;font-weight:600;text-align:right;word-break:break-all}.nv-status{color:#22c55e!important}.nv-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#facc15;color:#000;font-weight:800;font-size:15px;cursor:pointer}.nv-note{font-size:11px;color:#64748b;margin-top:12px}</style>
+<div id="nvSuccessPopup" class="nv-overlay"><div class="nv-card"><div class="nv-check">✓</div><h2>Withdrawal Approved</h2><p class="sub">Your withdrawal has been approved successfully.</p><div class="nv-amount">$<span id="nvAmt">0.00</span> <small>worth of USDC</small></div><p class="sub" style="margin:0">Withdrawn from your <b style="color:#fff" id="nvFrom">Funding</b> Account</p><div class="nv-details"><div class="nv-row"><span>From Account</span><span id="nvFrom2">Funding</span></div><div class="nv-row"><span>To Address</span><span id="nvTo">—</span></div><div class="nv-row"><span>Chain</span><span id="nvChain">—</span></div><div class="nv-row"><span>Transaction ID</span><span id="nvTxId">NXV-000000</span></div><div class="nv-row"><span>Date</span><span id="nvDate">—</span></div><div class="nv-row"><span>Status</span><span class="nv-status">● Approved</span></div></div><button class="nv-btn" onclick="closeNvPopup()">Done</button><p class="nv-note">Redirecting to dashboard...</p></div></div>
+<script>function showNvSuccess(d){document.getElementById('nvAmt').textContent=Number(d.coin_amount||0).toLocaleString('en-US',{minimumFractionDigits:2});document.getElementById('nvFrom').textContent=d.account_type||'Funding';document.getElementById('nvFrom2').textContent=d.account_type||'Funding';document.getElementById('nvTo').textContent=d.address||'—';document.getElementById('nvChain').textContent=d.chain||'—';document.getElementById('nvTxId').textContent='NXV-'+String(d.id).slice(0,6).toUpperCase();document.getElementById('nvDate').textContent=new Date().toLocaleString();document.getElementById('nvSuccessPopup').classList.add('show');setTimeout(function(){window.location.href='dashboard.html'},3000)}function closeNvPopup(){document.getElementById('nvSuccessPopup').classList.remove('show');window.location.href='dashboard.html'}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabaseClient = supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co", "sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
-
-  function openSupport(){
-    if(window.smartsupp){ smartsupp('chat:open'); }
-    else{ alert('Support dey load, try again in 2 seconds'); }
-  }
-
-  function showMsg(text, isErr){
-    let m = document.getElementById('msg');
-    if(!m) return;
-    m.style.display = 'block';
-    m.textContent = text;
-    m.style.background = isErr ? 'red' : '#1e293b';
-    m.style.color = 'white';
-  }
-
-  let currentId = localStorage.getItem('nexvera_pending_usdc_withdrawal');
-  let pollTimer = null;
-  if(currentId){
-    document.getElementById('formBox').style.display='none';
-    document.getElementById('waitingBox').style.display='block';
-    startPolling();
-    checkStatus();
-  }
-
-  async function requestWithdraw(){
-    const btn = document.getElementById('withdrawBtn');
-    let amount = Number(document.getElementById('Amount').value);
-    let address = document.getElementById('Bitcoin_address').value.trim();
-    let chain = document.getElementById('withdrawChain').value;
-    let fromAccount = document.getElementById('withdrawFrom').value;
-
-    if(!address || !chain){ showMsg('Fill amount, address and chain', true); return; }
-    // FIX: Block negative amount and zero
-    if (isNaN(amount) || amount <= 0) {
-      showMsg('You cannot withdraw a negative amount or 0. Please enter an amount more than 0.', true);
-      alert('You cannot withdraw a negative amount or 0. Please enter an amount more than 0.');
-      return;
-    }
-
-    btn.disabled = true; btn.textContent='Sending...'; showMsg('Checking balance...');
-    const { data:{ user } } = await supabaseClient.auth.getUser();
-    let userId = user ? user.id : localStorage.getItem('nexvera_user_id') || localStorage.getItem('user_id');
-    if(!userId){ showMsg('Please login first', true); btn.disabled=false; btn.textContent='Withraw'; return; }
-
-    let { data: balRows } = await supabaseClient.from('balances')
-      .select('amount')
-      .eq('user_id', userId)
-      .eq('coin', 'USDT')
-      .eq('account_type', fromAccount);
-
-    let have = (balRows || []).reduce((s, r) => s + Number(r.amount || 0), 0);
-    // FIX: Check even when balance is 0
-    if(amount > have){ showMsg(`Insufficient balance! You have $${have} in ${fromAccount} account`, true); btn.disabled=false; btn.textContent='Withraw'; return; }
-
-    showMsg('Sending to Supabase...');
-    // SAME TABLE AS FIAT + ETH + BTC + SOL - withdrawals
-    const { data, error } = await supabaseClient.from('withdrawals').insert([{
-      user_id: userId,
-      coin: 'USDC',
-      coin_amount: Number(amount),
-      usdt_amount: Number(amount),
-      account_type: fromAccount,
-      address: address,
-      chain: chain,
-      status: 'pending'
-    }]).select().single();
-
-    if(error){ showMsg('ERROR: '+error.message, true); btn.disabled=false; btn.textContent='Withraw'; return; }
-
-    currentId = data.id;
-    localStorage.setItem('nexvera_pending_usdc_withdrawal', String(data.id));
-    document.getElementById('formBox').style.display='none';
-    document.getElementById('waitingBox').style.display='block';
-    document.getElementById('waitText').innerHTML = `Your withdrawal of <b>$${amount} worth of USDC</b> from <b>${fromAccount}</b> account to <b>${chain} - ${address.slice(0,8)}...</b> has been sent.<br>Wait for admin approval.`;
-    startPolling();
-  }
-
-  function startPolling(){ if(pollTimer) clearInterval(pollTimer); pollTimer=setInterval(checkStatus,10000); }
-
-  async function checkStatus(){
-    if(!currentId) return;
-    let { data:d } = await supabaseClient.from('withdrawals').select('*').eq('id', currentId).single();
-    if(!d) return;
-    if(d.status==='approved'){
-      clearInterval(pollTimer);
-      localStorage.removeItem('nexvera_pending_usdc_withdrawal');
-      document.getElementById('waitText').innerHTML=`✅ <b>APPROVED!</b><br><b>$${d.coin_amount} worth of USDC</b> withdrawn from your <b>${d.account_type}</b> account.`;
-      document.getElementById('waitText').style.color='#22c55e';
-      setTimeout(()=>{ window.location.href='dashboard.html'; },3000);
-    }
-    if(d.status==='rejected'){
-      clearInterval(pollTimer);
-      localStorage.removeItem('nexvera_pending_usdc_withdrawal');
-      document.getElementById('waitText').innerHTML=`❌ <b>REJECTED</b><br>Reason: ${d.reject_reason||'Contact support'}<br><br><button onclick="localStorage.removeItem('nexvera_pending_usdc_withdrawal');document.getElementById('waitingBox').style.display='none';document.getElementById('formBox').style.display='block';" style="background:#facc15;color:#000;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer">Try Again</button>`;
-      document.getElementById('waitText').style.color='#ef4444';
-    }
-  }
+const supabaseClient=supabase.createClient("https://bximlwzpjiypajqcanse.supabase.co","sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV");
+function openSupport(){if(window.smartsupp){smartsupp('chat:open')}else{alert('Support dey load, try again in 2 seconds')}}
+function showMsg(t,e){let m=document.getElementById('msg');if(!m)return;m.style.display='block';m.textContent=t;m.style.background=e?'red':'#1e293b';m.style.color='white'}
+function showWaiting(){document.getElementById('formBox').style.display='none';document.getElementById('waitingBox').style.display='block';var n=document.getElementById('bottomNote');if(n)n.style.display='none'}
+function showForm(){document.getElementById('formBox').style.display='block';document.getElementById('waitingBox').style.display='none';var n=document.getElementById('bottomNote');if(n)n.style.display='block'}
+let currentId=localStorage.getItem('nexvera_pending_usdc_withdrawal');let pollTimer=null;
+if(currentId){showWaiting();startPolling();checkStatus()}
+async function requestWithdraw(){const btn=document.getElementById('withdrawBtn');let amount=Number(document.getElementById('Amount').value);let address=document.getElementById('Bitcoin_address').value.trim();let chain=document.getElementById('withdrawChain').value;let fromAccount=document.getElementById('withdrawFrom').value;if(!address||!chain){showMsg('Fill amount, address and chain',true);return}if(isNaN(amount)||amount<=0){showMsg('You cannot withdraw a negative amount or 0. Please enter an amount more than 0.',true);alert('You cannot withdraw a negative amount or 0. Please enter an amount more than 0.');return}btn.disabled=true;btn.textContent='Sending...';showMsg('Checking balance...');const{data:{user}}=await supabaseClient.auth.getUser();let userId=user?user.id:localStorage.getItem('nexvera_user_id')||localStorage.getItem('user_id');if(!userId){showMsg('Please login first',true);btn.disabled=false;btn.textContent='Withraw';return}let{data:balRows}=await supabaseClient.from('balances').select('amount').eq('user_id',userId).eq('coin','USDT').eq('account_type',fromAccount);let have=(balRows||[]).reduce((s,r)=>s+Number(r.amount||0),0);if(amount>have){showMsg('Insufficient balance! You have $'+have+' in '+fromAccount+' account',true);btn.disabled=false;btn.textContent='Withraw';return}showMsg('Sending to Supabase...');let res=await supabaseClient.from('withdrawals').insert([{user_id:userId,coin:'USDC',coin_amount:Number(amount),usdt_amount:Number(amount),account_type:fromAccount,address:address,chain:chain,status:'pending'}]).select().single();let data=res.data;let err=res.error;if(err){showMsg('ERROR: '+err.message,true);btn.disabled=false;btn.textContent='Withraw';return}currentId=data.id;localStorage.setItem('nexvera_pending_usdc_withdrawal',String(data.id));showWaiting();document.getElementById('waitAmount').textContent='$'+amount.toLocaleString('en-US',{minimumFractionDigits:2})+' worth of USDC';document.getElementById('waitText').innerHTML='To: <b style="color:#fff">'+chain+' - '+address.slice(0,8)+'...</b><br>From: <b style="color:#fff">'+fromAccount+'</b> account<br>Address: <b style="color:#fff">'+address+'</b><br><span style="color:#94a3b8">Wait for admin approval.</span>';startPolling()}
+function startPolling(){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(checkStatus,10000)}
+async function checkStatus(){if(!currentId)return;let{data:d}=await supabaseClient.from('withdrawals').select('*').eq('id',currentId).single();if(!d)return;if(d.status==='approved'){clearInterval(pollTimer);localStorage.removeItem('nexvera_pending_usdc_withdrawal');showNvSuccess(d)}if(d.status==='rejected'){clearInterval(pollTimer);localStorage.removeItem('nexvera_pending_usdc_withdrawal');document.getElementById('waitTitle').innerHTML='❌ Rejected';document.getElementById('waitTitle').style.color='#ef4444';document.getElementById('waitText').innerHTML='❌ <b>REJECTED</b><br>Reason: '+(d.reject_reason||'Contact support')+'<br><br><button onclick="localStorage.removeItem(\'nexvera_pending_usdc_withdrawal\');showForm();" style="background:#facc15;color:#000;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer">Try Again</button>';document.getElementById('waitText').style.color='#ef4444'}}
 </script>
-
-<script type="text/javascript">
-var _smartsupp = _smartsupp || {};
-_smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
-window.smartsupp||(function(d) {
-  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
-  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
-  c.type='text/javascript';c.charset='utf-8';c.async=true;
-  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
-})(document);
-</script>
-
-</body>
-</html>
+<script type="text/javascript">var _smartsupp=_smartsupp||{};_smartsupp.key='0cf6e2f2863569a9a32db14a2d7ecc78646db70c';window.smartsupp||(function(d){var s,c,o=smartsupp=function(){o._.push(arguments)};o._=[];s=d.getElementsByTagName('script')[0];c=d.createElement('script');c.type='text/javascript';c.charset='utf-8';c.async=true;c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s)})(document);</script>
+</body></html>

@@ -1,294 +1,65 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Deposit - Nexvera</title>
-  <link rel="Stylesheet" href="Css/css_fiat.css" />
-  <style>
-    #waitingBox{display:none;text-align:center;padding:20px}
-    #waitingBox h4{color:#facc15}
-    .supportBtn{display:block;background:#22c55e;color:#fff;text-align:center;padding:14px;border-radius:10px;font-weight:700;text-decoration:none;margin:14px 0}
-    .checkBtn{display:block;background:#1e293b;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;border:none;width:100%;cursor:pointer}
-    
-    
-  html, body {
-    margin: 0; padding: 0;
-    min-height: 100dvh;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .container, .signup_container, .card {
-    margin: auto !important;
-    width: 100%;
-  }
-
-    
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="back">
-      <a class="b_ack" href="deposit_option.html">back</a>
-    </div>
-    
-    <h2 id="pageTitle">Enter deposit details</h2>
-    
-    <!-- FORM - hides after submit -->
-    <div class="dp_section" id="formBox">
-      <form id="depForm" onsubmit="return false;">
-        <div class="grp">
-          <label for="local_currency">local Currency</label>
-          <input class="box" type="text" id="local_currency" placeholder="USD,GBP,EU" minlength="3" maxlength="3" required />
-        </div>
-        <div class="grp">
-          <label for="amount">Amount</label>
-          <input id="depAmount" class="box" type="number" min="1" step="0.01" placeholder="20000" required />
-        </div>
-        <div class="grp">
-          <label for="Bank_name">Bank name</label>
-          <input class="box" type="text" id="Bank_name" placeholder="chasebank,bank of america etc.... " required />
-        </div>
-        <select id="depAccount">
-          <option value="funding">Funding account</option>
-          <option value="trading">Trading account</option>
-        </select>
-        <div class="grp" id="btn">
-          <button class="box" id="m_btn" type="button" onclick="requestDeposit()">request payment details</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- WAITING - shows after submit, stays until admin approves -->
-    <div class="dp_section" id="waitingBox">
-      <h4 id="waitTitle">🔄 Transaction Processing</h4>
-      <p id="waitText" style="color:#94a3b8;line-height:1.6">Your deposit request has been sent.<br>Complete payment with Support, then wait for approval.</p>
-     <button id="supportBtn" onclick="openSupport()" style="
-  width:100%; background:#22c55e; color:#fff;
-  border:none; padding:5px; border-radius:12px; margin-top: 10px;margin-bottom: 10px;
-  font-size:15px; font-weight:700; cursor:pointer;
-">💬 Chat Support To Complete Payment</button>
-
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Deposit - Nexvera</title><link rel="Stylesheet" href="Css/css_fiat.css" />
+<style>
+#waitingBox{display:none;text-align:center}
+#waitingBox h4{color:#facc15}
+.supportBtn{display:block;background:#22c55e;color:#fff;text-align:center;padding:14px;border-radius:10px;font-weight:700;text-decoration:none;margin:14px 0}
+.checkBtn{display:block;background:#1e293b;color:#fff;text-align:center;padding:12px;border-radius:10px;font-weight:700;border:none;width:100%;cursor:pointer}
+html,body{margin:0;padding:0;min-height:100dvh;height:auto!important;display:block!important;overflow-y:auto!important;overflow-x:hidden!important;background:#000!important}
+body{padding:16px 0 32px 0!important;padding-top:env(safe-area-inset-top,16px)!important;padding-bottom:env(safe-area-inset-bottom,32px)!important;background:#000!important}
+.container,.signup_container,.card{margin:0 auto!important;width:100%!important}
+.container{background:#000!important;border:none!important;box-shadow:none!important;outline:none!important;padding:0 16px 24px 16px!important;overflow:visible!important}
+.back{width:100%!important;min-height:38px!important;display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:10!important;overflow:visible!important;text-align:left!important;margin:48px 0 12px 0!important;padding:12px 0 0 0!important;top:auto!important;left:auto!important;transform:none!important}
+.back a,.b_ack{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;min-height:36px!important;padding:8px 14px!important;background:#1e293b!important;color:#fff!important;border-radius:10px!important;text-decoration:none!important;font-weight:700!important;font-size:14px!important;border:none!important}
+.dp_section,.dp_section *{box-sizing:border-box!important}
+.dp_section label{display:block!important;text-align:center!important;font-weight:600!important;margin:0 0 6px 0!important}
+.dp_section input,.dp_section select,.box,#local_currency,#depAmount,#Bank_name,#depAccount{width:100%!important;padding:14px 12px!important;border-radius:12px!important;font-size:15px!important;margin:0 0 12px 0!important;display:block!important;text-align:center!important}
+#m_btn{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:16px!important;font-weight:700!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;margin:0!important}
+#waitingBox button{width:100%!important;padding:14px!important;border-radius:12px!important;font-size:15px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+h2{text-align:center!important}
+#btn{padding-bottom:8px!important}
+@keyframes spin{to{transform:rotate(360deg)}}
+@-webkit-keyframes spin{to{-webkit-transform:rotate(360deg)}}
+.nv-spinner{-webkit-animation:spin 1s linear infinite!important;animation:spin 1s linear infinite!important;transform-origin:center!important;will-change:transform!important}
+</style></head>
+<body><div class="container">
+<div class="back" style="margin-top:48px!important;padding-top:12px!important"><a class="b_ack" href="deposit_option.html" style="margin-top:0!important">← back</a></div>
+<h2 id="pageTitle">Enter deposit details</h2>
+<div class="dp_section" id="formBox"><form id="depForm" onsubmit="return false;">
+<div class="grp"><label for="local_currency">local Currency</label><input class="box" type="text" id="local_currency" placeholder="USD,GBP,EU" minlength="3" maxlength="3" required/></div>
+<div class="grp"><label for="amount">Amount</label><input id="depAmount" class="box" type="number" min="1" step="0.01" placeholder="20000" required/></div>
+<div class="grp"><label for="Bank_name">Bank name</label><input class="box" type="text" id="Bank_name" placeholder="chasebank,bank of america etc.... " required/></div>
+<select id="depAccount"><option value="funding">Funding account</option><option value="trading">Trading account</option></select>
+<div class="grp" id="btn"><button class="box" id="m_btn" type="button" onclick="requestDeposit()">request payment details</button></div>
+</form></div>
+<style>.nv-proc-card{background:#111a2e;border:1px solid #26314d;border-radius:20px;padding:26px 20px 20px;text-align:center;width:100%!important;box-sizing:border-box!important}.nv-spinner{width:64px;height:64px;margin:0 auto 14px;border:4px solid #1e293b;border-top:4px solid #facc15;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;-webkit-animation:spin 1s linear infinite!important;animation:spin 1s linear infinite!important}.nv-proc-card h4{margin:0;font-size:20px;color:#fff!important}.nv-proc-amt{font-size:28px;font-weight:800;color:#facc15;margin:10px 0 2px}.nv-steps{display:flex;justify-content:space-between;margin:18px 0;text-align:center}.nv-step{flex:1;font-size:11px;color:#94a3b8;line-height:1.4}.nv-dot{width:28px;height:28px;margin:0 auto 6px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}.nv-dot.done{background:#22c55e;color:#fff}.nv-dot.active{background:#facc15;color:#000}.nv-dot.todo{background:#1e293b;color:#64748b}.nv-proc-details{background:#0a0f1e;border-radius:12px;padding:12px 14px;text-align:center;margin:12px 0;font-size:13px;color:#cbd5e1;line-height:1.7}</style>
+<div class="dp_section" id="waitingBox"><div class="nv-proc-card"><div class="nv-spinner" id="nvSpinner"></div><h4 id="waitTitle">Transaction Processing</h4><p style="color:#94a3b8;font-size:13px;margin:6px 0 0">Please wait while we process your deposit.</p><div class="nv-proc-amt" id="waitAmount">—</div><div class="nv-proc-details" id="waitText">Your deposit request has been sent.<br>Complete payment with Support, then wait for approval.</div><div class="nv-steps"><div class="nv-step"><div class="nv-dot done">✓</div>Request<br>Sent</div><div class="nv-step"><div class="nv-dot active">2</div>Processing<br><span style="color:#facc15">In Progress</span></div><div class="nv-step"><div class="nv-dot todo">3</div>Approved<br>& Paid</div></div><button id="supportBtn" onclick="openSupport()" style="background:#22c55e;color:#fff;border:none;margin:14px 0;">💬 Chat Support To Complete Payment</button><button id="checkBtn" class="checkBtn" onclick="checkStatus()">Check Status 🔄</button><p id="autoNote" style="font-size:12px;color:#94a3b8;margin-top:12px">This page checks automatically every 10 seconds. Keep it open.</p><p id="cancelLink" style="margin-top:15px;"><a href="#" onclick="cancelPending(); return false;" style="color:#94a3b8; font-size:13px;">Cancel and start a new deposit</a></p></div></div>
+</div>
+<style>.nv-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;padding:20px}.nv-overlay.show{display:flex}.nv-card{background:#111a2e;width:100%;max-width:360px;border-radius:20px;padding:28px 22px 22px;text-align:center;border:1px solid #26314d}.nv-check{width:68px;height:68px;margin:0 auto 14px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff}.nv-card h2{margin:0;font-size:22px;color:#fff}.nv-card p.sub{color:#94a3b8;font-size:13px;margin:6px 0 18px;line-height:1.5}.nv-amount{font-size:30px;font-weight:800;color:#facc15;margin:4px 0 2px}.nv-details{background:#0a0f1e;border-radius:12px;padding:14px;text-align:center;margin:16px 0;font-size:13px}.nv-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e293b}.nv-row:last-child{border:none}.nv-row span:first-child{color:#94a3b8}.nv-row span:last-child{color:#fff;font-weight:600;text-align:right}.nv-status{color:#22c55e!important}.nv-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#facc15;color:#000;font-weight:800;font-size:15px;cursor:pointer}.nv-note{font-size:11px;color:#64748b;margin-top:12px}</style>
+<div id="nvSuccessPopup" class="nv-overlay"><div class="nv-card"><div class="nv-check">✓</div><h2>Deposit Approved</h2><p class="sub">Your deposit has been approved successfully.</p><div class="nv-amount"><span id="nvAmt">0.00</span> <small id="nvCurr">USD</small></div><p class="sub" style="margin:0">Added to your <b style="color:#fff" id="nvFrom">Funding</b> Account</p><div class="nv-details"><div class="nv-row"><span>From Account</span><span id="nvFrom2">Funding</span></div><div class="nv-row"><span>Bank</span><span id="nvTo">—</span></div><div class="nv-row"><span>Transaction ID</span><span id="nvTxId">NXV-000000</span></div><div class="nv-row"><span>Date</span><span id="nvDate">—</span></div><div class="nv-row"><span>Status</span><span class="nv-status">● Approved</span></div></div><button class="nv-btn" onclick="closeNvPopup()">Done</button><p class="nv-note">Redirecting...</p></div></div>
 <script>
-  let lastDeposit = null;
-  try {
-    lastDeposit = JSON.parse(localStorage.getItem('nexvera_pending_deposit_details') || 'null');
-  } catch(e){ lastDeposit = null; }
-
-  function openSupport() {
-    if (!window.smartsupp) {
-      alert('Support dey load, try again in 2 seconds');
-      return;
-    }
-    let autoMessage = "Hello Support, I am requesting deposit details. I just made a deposit request, please send me the payment details to complete payment. Thank you.";
-    if (lastDeposit) {
-      autoMessage = `Hello Support, I am requesting deposit details. I just made a deposit of ${lastDeposit.amount} ${lastDeposit.currency} to my ${lastDeposit.account} account. My bank is ${lastDeposit.bank}. Please send me the payment details to complete payment. Thank you.`;
-    } else {
-      let wt = document.getElementById('waitText') ? document.getElementById('waitText').innerText : '';
-      if (wt && wt.includes('deposit of')) {
-        autoMessage = `Hello Support, I am requesting deposit details. ${wt} Please send me the payment details to complete payment. Thank you.`;
-      }
-    }
-    smartsupp('chat:open');
-    setTimeout(function(){
-      smartsupp('chat:message', autoMessage);
-    }, 1000);
-  }
+/* FIX - JS SPINNER, NO CSS ANIMATION NEEDED, MUST ROLL */
+let nvDeg=0;
+setInterval(function(){let s=document.getElementById('nvSpinner');if(s){nvDeg=(nvDeg+6)%360;s.style.transform='rotate('+nvDeg+'deg)';s.style.webkitTransform='rotate('+nvDeg+'deg)' }},20);
+let lastDeposit=null;try{lastDeposit=JSON.parse(localStorage.getItem('nexvera_pending_deposit_details')||'null')}catch(e){lastDeposit=null}
+function openSupport(){if(!window.smartsupp){alert('Support dey load, try again in 2 seconds');return}let autoMessage="Hello Support, I am requesting deposit details. I just made a deposit request, please send me the payment details to complete payment. Thank you.";if(lastDeposit){autoMessage="Hello Support, I am requesting deposit details. I just made a deposit of "+lastDeposit.amount+" "+lastDeposit.currency+" to my "+lastDeposit.account+" account. My bank is "+lastDeposit.bank+". Please send me the payment details to complete payment. Thank you."}else{let wt=document.getElementById('waitText')?document.getElementById('waitText').innerText:'';if(wt&&wt.includes('deposit of')){autoMessage="Hello Support, I am requesting deposit details. "+wt+" Please send me the payment details to complete payment. Thank you."}}smartsupp('chat:open');setTimeout(function(){smartsupp('chat:message',autoMessage)},1000)}
+function showNvSuccess(d){document.getElementById('nvAmt').textContent=Number(d.coin_amount||0).toLocaleString('en-US',{minimumFractionDigits:2});document.getElementById('nvCurr').textContent=d.local_currency||'USD';document.getElementById('nvFrom').textContent=d.account_type||'Funding';document.getElementById('nvFrom2').textContent=d.account_type||'Funding';document.getElementById('nvTo').textContent=d.bank_name||'—';document.getElementById('nvTxId').textContent='NXV-'+String(d.id).slice(0,6).toUpperCase();document.getElementById('nvDate').textContent=new Date().toLocaleString();document.getElementById('nvSuccessPopup').classList.add('show');setTimeout(function(){window.location.href='deposit_option.html'},7000)}function closeNvPopup(){document.getElementById('nvSuccessPopup').classList.remove('show');window.location.href='deposit_option.html'}
+function fmtAmt(v){return Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2})}
 </script>
-      <button id="checkBtn" class="checkBtn" onclick="checkStatus()">Check Status 🔄</button>
-      <p id="autoNote" style="font-size:12px;color:#94a3b8;margin-top:12px">This page checks automatically every 10 seconds. Keep it open.</p>
-      <p id="cancelLink" style="margin-top:15px;"><a href="#" onclick="cancelPending(); return false;" style="color:#94a3b8; font-size:13px;">Cancel and start a new deposit</a></p>
-    </div>
-
-  </div>
-  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabaseClient = supabase.createClient(
-    'https://bximlwzpjiypajqcanse.supabase.co',
-    'sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV'
-  );
-
-  let currentDepositId = localStorage.getItem('nexvera_pending_deposit');
-  let pollTimer = null;
-  let resultShown = false;
-
-  function showForm() {
-    document.getElementById('pageTitle').style.display = 'block';
-    document.getElementById('pageTitle').textContent = 'Enter deposit details';
-    document.getElementById('formBox').style.display = 'block';
-    document.getElementById('waitingBox').style.display = 'none';
-    if (pollTimer) clearInterval(pollTimer);
-  }
-
-  function showWaiting() {
-    resultShown = false;
-    document.getElementById('pageTitle').style.display = 'none';
-    document.getElementById('formBox').style.display = 'none';
-    document.getElementById('waitingBox').style.display = 'block';
-    document.getElementById('waitTitle').innerHTML = '🔄 Transaction Processing';
-    document.getElementById('waitTitle').style.color = '#facc15';
-    document.getElementById('supportBtn').style.display = 'block';
-    document.getElementById('checkBtn').style.display = 'block';
-    document.getElementById('autoNote').style.display = 'block';
-    document.getElementById('cancelLink').style.display = 'block';
-    startPolling();
-  }
-
-  function clearPending() {
-    localStorage.removeItem('nexvera_pending_deposit');
-    localStorage.removeItem('nexvera_pending_deposit_details');
-    localStorage.removeItem('nexvera_pending_deposit_user');
-    currentDepositId = null;
-  }
-
-  function cancelPending() {
-    clearPending();
-    showForm();
-  }
-
-  function showApproved(d) {
-    if (resultShown) return;
-    resultShown = true;
-    document.getElementById('pageTitle').style.display = 'none';
-    document.getElementById('formBox').style.display = 'none';
-    document.getElementById('waitingBox').style.display = 'block';
-    if (pollTimer) clearInterval(pollTimer);
-    document.getElementById('waitTitle').innerHTML = '✅ Approved!';
-    document.getElementById('waitTitle').style.color = '#22c55e';
-    document.getElementById('supportBtn').style.display = 'none';
-    document.getElementById('checkBtn').style.display = 'none';
-    document.getElementById('autoNote').style.display = 'none';
-    document.getElementById('cancelLink').style.display = 'none';
-    document.getElementById('waitText').innerHTML = `${d.coin_amount} ${d.local_currency} added to your <b>${d.account_type}</b> account.<br><br>Redirecting...`;
-    document.getElementById('waitText').style.color = '#22c55e';
-    clearPending();
-    setTimeout(()=>{ window.location.href = 'deposit_option.html'; }, 7000);
-  }
-
-  function showRejected(d) {
-    if (resultShown) return;
-    resultShown = true;
-    document.getElementById('pageTitle').style.display = 'none';
-    document.getElementById('formBox').style.display = 'none';
-    document.getElementById('waitingBox').style.display = 'block';
-    if (pollTimer) clearInterval(pollTimer);
-    document.getElementById('waitTitle').innerHTML = '❌ Rejected';
-    document.getElementById('waitTitle').style.color = '#ef4444';
-    document.getElementById('supportBtn').style.display = 'none';
-    document.getElementById('checkBtn').style.display = 'none';
-    document.getElementById('autoNote').style.display = 'none';
-    document.getElementById('cancelLink').style.display = 'none';
-    document.getElementById('waitText').innerHTML = `❌ <b>REJECTED</b><br>Reason: ${d.reject_reason || 'Contact support'}<br><br><button onclick="window.location.reload()" style="background:#facc15;color:#000;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer">Try Again</button>`;
-    document.getElementById('waitText').style.color = '#ef4444';
-    clearPending();
-  }
-
-  (async function verifyPendingOnLoad() {
-    if (!currentDepositId) { showForm(); return; }
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    const savedUser = localStorage.getItem('nexvera_pending_deposit_user');
-    if (user && savedUser && savedUser !== user.id) {
-      clearPending(); showForm(); return;
-    }
-    const { data: d } = await supabaseClient.from('deposits').select('*').eq('id', currentDepositId).maybeSingle();
-    if (!d) {
-      clearPending(); showForm(); return;
-    }
-    if (user && d.user_id !== user.id) {
-      clearPending(); showForm(); return;
-    }
-    if (d.status === 'approved') { showApproved(d); return; }
-    if (d.status === 'rejected') { showRejected(d); return; }
-    if (d.status !== 'pending') { clearPending(); showForm(); return; }
-    try {
-      const det = JSON.parse(localStorage.getItem('nexvera_pending_deposit_details') || 'null');
-      if (det) {
-        lastDeposit = det;
-        document.getElementById('waitText').innerHTML = `Your deposit of <b>${det.amount} ${det.currency}</b> to <b>${det.account}</b> account has been sent.<br>Complete payment with Support, then wait for approval.`;
-        document.getElementById('waitText').style.color = '#94a3b8';
-      }
-    } catch(e){}
-    showWaiting();
-  })();
-  
-  async function requestDeposit() {
-    const btn = document.getElementById('m_btn');
-    const currency = document.getElementById('local_currency').value.trim().toUpperCase();
-    const amount = document.getElementById('depAmount').value.trim();
-    const bank = document.getElementById('Bank_name').value.trim();
-    const account = document.getElementById('depAccount').value;
-    if (!currency || !amount || !bank) {
-      alert('Please fill Currency, Amount and Bank Name');
-      return;
-    }
-    // FIX: Block negative amount and zero - never send to admin
-    let amtNum = Number(amount);
-    if (isNaN(amtNum) || amtNum <= 0) {
-      alert('You cannot deposit a negative amount or 0. Please enter an amount more than 0.');
-      return;
-    }
-    btn.disabled = true;
-    btn.textContent = 'Processing...';
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    const userId = user ? user.id : null;
-    if(!userId){ alert('Please login first'); btn.disabled=false; btn.textContent='request payment details'; return; }
-    const { data, error } = await supabaseClient.from('deposits').insert([{
-      user_id: userId,
-      coin_amount: Number(amount),
-      local_currency: currency,
-      bank_name: bank,
-      account_type: account,
-      status: 'pending'
-    }]).select().single();
-    if (error) {
-      alert('Error: ' + error.message);
-      btn.disabled = false;
-      btn.textContent = 'request payment details';
-      return;
-    }
-    currentDepositId = data.id;
-    localStorage.setItem('nexvera_pending_deposit', String(data.id));
-    localStorage.setItem('nexvera_pending_deposit_user', userId);
-    lastDeposit = { amount: amount, currency: currency, bank: bank, account: account };
-    localStorage.setItem('nexvera_pending_deposit_details', JSON.stringify(lastDeposit));
-    document.getElementById('waitText').innerHTML = `Your deposit of <b>${amount} ${currency}</b> to <b>${account}</b> account has been sent.<br>Complete payment with Support, then wait for approval.`;
-    document.getElementById('waitText').style.color = '#94a3b8';
-    showWaiting();
-    btn.disabled = false;
-    btn.textContent = 'request payment details';
-  }
-
-  function startPolling(){
-    if(pollTimer) clearInterval(pollTimer);
-    pollTimer = setInterval(checkStatus, 10000);
-  }
-
-  async function checkStatus(){
-    if(!currentDepositId) return;
-    let { data: d } = await supabaseClient.from('deposits').select('*').eq('id', currentDepositId).single();
-    if(!d) {
-      clearPending();
-      showForm();
-      return;
-    }
-    if(d.status === 'approved'){ showApproved(d); return; }
-    if(d.status === 'rejected'){ showRejected(d); return; }
-  }
+const supabaseClient=supabase.createClient('https://bximlwzpjiypajqcanse.supabase.co','sb_publishable_xZOu-PA9_U5izK5wyPnJaA_8cG_pjnV');
+let currentDepositId=localStorage.getItem('nexvera_pending_deposit');let pollTimer=null;let resultShown=false;
+function showForm(){document.getElementById('pageTitle').style.display='block';document.getElementById('pageTitle').textContent='Enter deposit details';document.getElementById('formBox').style.display='block';document.getElementById('waitingBox').style.display='none';if(pollTimer)clearInterval(pollTimer)}
+function showWaiting(){resultShown=false;document.getElementById('pageTitle').style.display='none';document.getElementById('formBox').style.display='none';document.getElementById('waitingBox').style.display='block';document.getElementById('waitTitle').innerHTML='Transaction Processing';document.getElementById('waitTitle').style.color='#facc15';document.getElementById('supportBtn').style.display='block';document.getElementById('checkBtn').style.display='block';document.getElementById('autoNote').style.display='block';document.getElementById('cancelLink').style.display='block';startPolling()}
+function clearPending(){localStorage.removeItem('nexvera_pending_deposit');localStorage.removeItem('nexvera_pending_deposit_details');localStorage.removeItem('nexvera_pending_deposit_user');currentDepositId=null}
+function cancelPending(){clearPending();showForm()}
+function showApproved(d){if(resultShown)return;resultShown=true;document.getElementById('pageTitle').style.display='none';document.getElementById('formBox').style.display='none';document.getElementById('waitingBox').style.display='block';if(pollTimer)clearInterval(pollTimer);document.getElementById('waitTitle').innerHTML='✅ Approved!';document.getElementById('waitTitle').style.color='#22c55e';document.getElementById('supportBtn').style.display='none';document.getElementById('checkBtn').style.display='none';document.getElementById('autoNote').style.display='none';document.getElementById('cancelLink').style.display='none';document.getElementById('waitText').innerHTML=fmtAmt(d.coin_amount)+' '+d.local_currency+' added to your <b>'+d.account_type+'</b> account.<br><br>Redirecting...';document.getElementById('waitText').style.color='#22c55e';clearPending();showNvSuccess(d)}
+function showRejected(d){if(resultShown)return;resultShown=true;document.getElementById('pageTitle').style.display='none';document.getElementById('formBox').style.display='none';document.getElementById('waitingBox').style.display='block';if(pollTimer)clearInterval(pollTimer);document.getElementById('waitTitle').innerHTML='❌ Rejected';document.getElementById('waitTitle').style.color='#ef4444';document.getElementById('supportBtn').style.display='none';document.getElementById('checkBtn').style.display='none';document.getElementById('autoNote').style.display='none';document.getElementById('cancelLink').style.display='none';document.getElementById('waitText').innerHTML='❌ <b>REJECTED</b><br>Reason: '+(d.reject_reason||'Contact support')+'<br><br><button onclick="window.location.reload()" style="background:#facc15;color:#000;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer">Try Again</button>';document.getElementById('waitText').style.color='#ef4444';clearPending()}
+async function verifyPendingOnLoad(){if(!currentDepositId){showForm();return}const{data:{user}}=await supabaseClient.auth.getUser();const savedUser=localStorage.getItem('nexvera_pending_deposit_user');if(user&&savedUser&&savedUser!==user.id){clearPending();showForm();return}const{data:d}=await supabaseClient.from('deposits').select('*').eq('id',currentDepositId).maybeSingle();if(!d){clearPending();showForm();return}if(user&&d.user_id!==user.id){clearPending();showForm();return}if(d.status==='approved'){showApproved(d);return}if(d.status==='rejected'){showRejected(d);return}if(d.status!=='pending'){clearPending();showForm();return}try{const det=JSON.parse(localStorage.getItem('nexvera_pending_deposit_details')||'null');if(det){lastDeposit=det;document.getElementById('waitText').innerHTML='Your deposit of <b>'+fmtAmt(det.amount)+' '+det.currency+'</b> to <b>'+det.account+'</b> account has been sent.<br>Complete payment with Support, then wait for approval.';document.getElementById('waitText').style.color='#94a3b8';document.getElementById('waitAmount').textContent=fmtAmt(det.amount)+' '+det.currency}}catch(e){}showWaiting()}
+verifyPendingOnLoad();
+async function requestDeposit(){const btn=document.getElementById('m_btn');const currency=document.getElementById('local_currency').value.trim().toUpperCase();const amount=document.getElementById('depAmount').value.trim();const bank=document.getElementById('Bank_name').value.trim();const account=document.getElementById('depAccount').value;if(!currency||!amount||!bank){alert('Please fill Currency, Amount and Bank Name');return}let amtNum=Number(amount);if(isNaN(amtNum)||amtNum<=0){alert('You cannot deposit a negative amount or 0. Please enter an amount more than 0.');return}btn.disabled=true;btn.textContent='Processing...';const{data:{user}}=await supabaseClient.auth.getUser();const userId=user?user.id:null;if(!userId){alert('Please login first');btn.disabled=false;btn.textContent='request payment details';return}let res=await supabaseClient.from('deposits').insert([{user_id:userId,coin_amount:Number(amount),local_currency:currency,bank_name:bank,account_type:account,status:'pending'}]).select().single();let data=res.data;let err=res.error;if(err){alert('Error: '+err.message);btn.disabled=false;btn.textContent='request payment details';return}currentDepositId=data.id;localStorage.setItem('nexvera_pending_deposit',String(data.id));localStorage.setItem('nexvera_pending_deposit_user',userId);lastDeposit={amount:amount,currency:currency,bank:bank,account:account};localStorage.setItem('nexvera_pending_deposit_details',JSON.stringify(lastDeposit));document.getElementById('waitText').innerHTML='Your deposit of <b>'+fmtAmt(amount)+' '+currency+'</b> to <b>'+account+'</b> account has been sent.<br>Complete payment with Support, then wait for approval.';document.getElementById('waitText').style.color='#94a3b8';document.getElementById('waitAmount').textContent=fmtAmt(amount)+' '+currency;showWaiting();btn.disabled=false;btn.textContent='request payment details'}
+function startPolling(){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(checkStatus,10000)}
+async function checkStatus(){if(!currentDepositId)return;let{data:d}=await supabaseClient.from('deposits').select('*').eq('id',currentDepositId).single();if(!d){clearPending();showForm();return}if(d.status==='approved'){showApproved(d);return}if(d.status==='rejected'){showRejected(d);return}}
 </script>
-
-<script type="text/javascript">
-var _smartsupp = _smartsupp || {};
-_smartsupp.key = '0cf6e2f2863569a9a32db14a2d7ecc78646db70c';
-window.smartsupp||(function(d) {
-  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
-  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
-  c.type='text/javascript';c.charset='utf-8';c.async=true;
-  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
-})(document);
-</script>
-
-</body>
-</html>
+<script type="text/javascript">var _smartsupp=_smartsupp||{};_smartsupp.key='0cf6e2f2863569a9a32db14a2d7ecc78646db70c';window.smartsupp||(function(d){var s,c,o=smartsupp=function(){o._.push(arguments)};o._=[];s=d.getElementsByTagName('script')[0];c=d.createElement('script');c.type='text/javascript';c.charset='utf-8';c.async=true;c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s)})(document);</script>
+</body></html>
